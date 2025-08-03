@@ -23,7 +23,7 @@ class LikePostView(APIView):
             return Response({'message': 'Descurtido'}, status=status.HTTP_200_OK)
         return Response({'message': 'Curtido'}, status=status.HTTP_201_CREATED)
     
-class CommentPost(generics.CreateAPIView):
+class CommentPostView(generics.CreateAPIView):
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
     permission_classes = [permissions.IsAuthenticated]
