@@ -18,6 +18,7 @@ class AuthTests(APITestCase):
             'username': 'testuser',
             'email': 'test@example.com',
             'password': 'StrongPassword123',
+            'confirm_password': 'StrongPassword123'
         }
 
         self.user = User.objects.create_user(
@@ -48,12 +49,24 @@ class AuthTests(APITestCase):
             'username': 'testuser_with_avatar',
             'email': 'avatar@example.com',
             'password': 'Avatarassword123',
+            'confirm_password': 'Avatarassword123',
             'avatar': avatar
         }
         response = self.client.post(self.register_url, data_with_avatar, format='multipart')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertTrue(User.objects.filter(username='testuser_with_avatar').exists())
         self.assertIn('avatar', response.data)
+
+    def test_registration_password_mismatch(self):
+        data = {
+            'username': 'failuser', 
+            'email': 'failuser@example.com',
+            'password': 'UltraSecurePass456!',
+            'confirm_password': 'DifferentPass456!'
+        }
+        response = self.client.post(self.register_url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn('confirm_password', response.data)
 
     def test_jwt_login_token(self):
         response = self.client.post(self.token_url, {

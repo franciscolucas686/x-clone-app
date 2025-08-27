@@ -16,3 +16,6 @@ env/
 # Arquivos de IDEs
 .vscode/
 .idea/
+
+# Uploads de usuários
+/media/
