@@ -5,12 +5,12 @@ import { useAuth } from "../auth/useAuth";
 export default function Login() {
   const { login } = useAuth();
   const navigate = useNavigate();
-  const [form, setForm] = useState({ username: "", password: "" });
+  const [form, setForm] = useState({ email: "", password: "" });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await login(form.username, form.password);
+      await login(form.email, form.password);
       navigate("/feed");
     } catch (error) {
       console.error("Login falhou", error);
@@ -23,9 +23,9 @@ export default function Login() {
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <input
             type="text"
-            placeholder="Usuário"
-            value={form.username}
-            onChange={(e) => setForm({ ...form, username: e.target.value })}
+            placeholder="Email"
+            value={form.email}
+            onChange={(e) => setForm({ ...form, email: e.target.value })}
             className="p-2 border rounded"
           />
           <input type="password" placeholder="senha" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value})} className="p-2 border rounded" />
