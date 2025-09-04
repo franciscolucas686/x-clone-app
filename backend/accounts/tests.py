@@ -6,12 +6,13 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from django.core.files.uploadedfile import SimpleUploadedFile
 import io
 from PIL import Image
+from datetime import timedelta
+from rest_framework_simplejwt.tokens import AccessToken
 
 class AuthTests(APITestCase):
     def setUp(self):
         self.register_url = reverse('register')
         self.token_url = reverse('token_obtain_pair')
-        self.refresh_url = reverse('token_refresh')
         self.profile_url = reverse('profile')
 
         self.user_data = {
@@ -75,13 +76,6 @@ class AuthTests(APITestCase):
         }, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertIn('access', response.data)
-        self.assertIn('refresh', response.data)
-    
-    def test_token_refresh(self):
-        refresh = RefreshToken.for_user(self.user)
-        response = self.client.post(self.refresh_url, {'refresh': str(refresh)}, format='json')
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertIn('access', response.data)
 
     def test_profile_acccess_authenticated(self):
         self.client.force_authenticate(user=self.user)
@@ -102,3 +96,15 @@ class AuthTests(APITestCase):
         self.assertEqual(self.user.username, 'updateduser')
         self.assertTrue(bool(self.user.avatar))
         self.assertIn('avatar', response.data)
+
+    def test_token_expired(self):
+        expired_token = AccessToken.for_user(self.user)
+        expired_token.set_exp(lifetime=timedelta(seconds=-1))
+
+        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {str(expired_token)}')
+
+        response = self.client.get(self.profile_url)
+
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+        self.assertIn('detail', response.data)
+        self.assertEqual(response.data['detail'].code, 'token_not_valid')
