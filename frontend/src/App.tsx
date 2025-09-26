@@ -1,7 +1,7 @@
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
-import { AuthProvider } from './auth/AuthProvider';
-import Home from './pages/Home';
-import Feed from './pages/Feed';
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { AuthProvider } from "./auth/AuthProvider";
+import Feed from "./components/layout/ThreeColumnLayout";
+import Home from "./pages/Home";
 // import { useAuth } from './auth/useAuth';
 
 // function PrivateRoute({ children }: { children: JSX.Element }) {
@@ -19,8 +19,7 @@ function App() {
         </Routes>
       </BrowserRouter>
     </AuthProvider>
-
-  )
+  );
 }
 
-export default App
+export default App;

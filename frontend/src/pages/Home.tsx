@@ -4,7 +4,7 @@ import RegisterModal from "./RegisterModal";
 
 export default function Home() {
   const [showLoginModal, setShowLoginModal] = useState(false);
-  const[showRegisterModal, setShowRegisterModal] = useState(false);
+  const [showRegisterModal, setShowRegisterModal] = useState(false);
 
   return (
     <div className="flex min-w-screen">
@@ -16,7 +16,9 @@ export default function Home() {
         <div className="flex flex-col w-64  bg-white py-12">
           <h2 className="text-3xl font-bold mb-8">Inscreva-se hoje</h2>
           <div className="flex flex-col ">
-            <button className="btn" onClick={()=>setShowRegisterModal(true)}>Criar conta</button>
+            <button className="btn" onClick={() => setShowRegisterModal(true)}>
+              Criar conta
+            </button>
 
             <div className="flex items-center w-64 my-4">
               <div className="flex-grow h-px bg-gray-300"></div>

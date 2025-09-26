@@ -19,18 +19,14 @@ body {
   min-height: 100vh;
 }
 
-
-  .col-left {
-    @apply w-1/2 flex items-center justify-center bg-white;
-  }
-
-  .col.right {
-    @apply h-dvh w-dvh flex flex-col bg-white py-[3rem];
-  }
-
-  .btn {
-    @apply bg-black hover:bg-neutral-700 duration-200 ease-in-out font-bold text-white px-4 py-2 rounded-full cursor-pointer ;
+.col-left {
+  @apply w-1/2 flex items-center justify-center bg-white;
 }
 
+.col.right {
+  @apply h-dvh w-dvh flex flex-col bg-white py-[3rem];
+}
 
-
+.btn {
+  @apply bg-black hover:bg-neutral-700 duration-200 ease-in-out font-bold text-white px-4 py-2 rounded-full cursor-pointer;
+}
