@@ -56,7 +56,10 @@ export default function RegisterModal({ onClose }: RegisterModalProps) {
   };
 
   return (
-    <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50">
+    <div
+      onClick={onClose}
+      className="fixed inset-0 bg-black/80 flex items-center justify-center z-50"
+    >
       <div className="relative bg-white rounded w-[90%] max-w-[400px] h-[90%] max-h-[600px] px-8 py-6 flex flex-col overflow-auto">
         <button
           type="button"
@@ -105,19 +108,13 @@ export default function RegisterModal({ onClose }: RegisterModalProps) {
             required
           />
 
-          {error && (
-            <p className="text-red-500 text-sm text-center">{error}</p>
-          )}
+          {error && <p className="text-red-500 text-sm text-center">{error}</p>}
 
-          <button
-            type="submit"
-            disabled={loading}
-          className="btn"
-          >
+          <button type="submit" disabled={loading} className="btn">
             {loading ? "Registrando..." : "Cadastrar"}
           </button>
         </form>
       </div>
     </div>
-  )
+  );
 }

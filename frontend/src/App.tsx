@@ -1,8 +1,31 @@
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { AuthProvider } from "./auth/AuthProvider";
+import Home from "./pages/Home";
+import Feed from "./components/feed/Feed";
+import Profile from "./pages/ProfilePage";
+import AppLayout from "./layouts/AppLayout";
 
-import './index.css'
+// import { useAuth } from './auth/useAuth';
+
+// function PrivateRoute({ children }: { children: JSX.Element }) {
+//   const { user } = useAuth();
+//   return user ? children : <Navigate to="/login" replace/>;
+// }
 
 function App() {
-  return <h1 className="text-3xl font-bold underline">Hello world!</h1>
+  return (
+    <AuthProvider>
+      <BrowserRouter>
+        <Routes>
+            <Route path="/" element={<Home />} />
+          <Route element={<AppLayout />}>
+            <Route path="/feed" element={<Feed />} />
+            <Route path="/profile" element={<Profile />} />
+          </Route>
+        </Routes>
+      </BrowserRouter>
+    </AuthProvider>
+  );
 }
 
-export default App
+export default App;
