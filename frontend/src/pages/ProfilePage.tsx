@@ -1,7 +1,11 @@
-import { Link } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
+import { useState } from "react";
+import { Link } from "react-router-dom";
+import EditProfileModal from "../components/profile/EditProfileModal";
 
 export default function Profile() {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
   return (
     <div className="flex flex-col">
       <div className="flex items-center">
@@ -12,7 +16,9 @@ export default function Profile() {
         </Link>
         <div className="ml-4">
           <h2 className="text-xl font-bold">Francisco Lucas</h2>
-          <p className="text-gray-500 text-sm"><span>0</span> posts</p>
+          <p className="text-gray-500 text-sm">
+            <span>0</span> posts
+          </p>
         </div>
       </div>
 
@@ -44,7 +50,10 @@ export default function Profile() {
           </div>
         </div>
 
-        <button className="px-4 py-2 border border-gray-300 rounded-full font-semibold hover:bg-gray-100 transition">
+        <button
+          onClick={() => setIsModalOpen(true)}
+          className="px-4 py-2 border border-gray-300 rounded-full font-semibold hover:bg-gray-100 transition"
+        >
           Editar perfil
         </button>
       </div>
@@ -54,6 +63,14 @@ export default function Profile() {
       </div>
 
       <div className="p-4 text-gray-500">Ainda não há posts</div>
+      {isModalOpen && (
+        <EditProfileModal
+          onClose={() => setIsModalOpen(false)}
+          initialName="Francisco Lucas"
+          initialUserName="@Francis59482770"
+          initialPassword="password123"
+        />
+      )}
     </div>
   );
 }
