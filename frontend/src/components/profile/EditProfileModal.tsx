@@ -7,6 +7,7 @@ interface EditProfileModalProps {
   initialName?: string;
   initialUserName?: string;
   initialPassword: string;
+  confirmPassword: string;
 }
 
 export default function EditProfileModal({
@@ -14,8 +15,14 @@ export default function EditProfileModal({
   initialName = "",
   initialUserName = "",
   initialPassword = "",
+  confirmPassword = "",
 }: EditProfileModalProps) {
-  const [form, setForm] = useState({ name: initialName, username: initialUserName, password: initialPassword });
+  const [form, setForm] = useState({
+    name: initialName,
+    username: initialUserName,
+    password: initialPassword,
+    confirmPassword: confirmPassword,
+  });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -30,7 +37,10 @@ export default function EditProfileModal({
       <div className="relative w-2xs h-48 bg-gray-300 m-auto">
         <button className="absolute inset-0 flex items-center justify-center text-2xl text-gray-400 ">
           <div className="m-2 rounded-full bg-gray-100 hover:bg-neutral-400 opacity-50 transition-colors cursor-pointer">
-            <Camera size={40} className="p-2 text-gray-400 hover:text-gray-200 bg-opacity-50 transition-colors" />
+            <Camera
+              size={40}
+              className="p-2 text-gray-400 hover:text-gray-200 bg-opacity-50 transition-colors"
+            />
           </div>
         </button>
       </div>
@@ -55,11 +65,22 @@ export default function EditProfileModal({
           />
         </div>
         <div>
-          <label className="block text-gray-700">Nome de Usuário</label>
+          <label className="block text-gray-700">Senha</label>
           <input
             type="text"
             value={form.password}
             onChange={(e) => setForm({ ...form, password: e.target.value })}
+            className="w-full p-2 border border-gray-200 rounded"
+          />
+        </div>
+        <div>
+          <label className="block text-gray-700">Confirmar senha</label>
+          <input
+            type="text"
+            value={form.confirmPassword}
+            onChange={(e) =>
+              setForm({ ...form, confirmPassword: e.target.value })
+            }
             className="w-full p-2 border border-gray-200 rounded"
           />
         </div>

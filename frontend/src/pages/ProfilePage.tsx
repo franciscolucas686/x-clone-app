@@ -22,10 +22,10 @@ export default function Profile() {
         </div>
       </div>
 
-      <div className="relative">
+      <div>
         <div className="h-40 bg-gray-300" />
 
-        <div className="absolute -bottom-16 left-4">
+        <div className="flex items-end px-4 -mt-16">
           <img
             src="https://avatars.githubusercontent.com/u/15079328?v=4"
             alt="Francisco Lucas"
@@ -34,7 +34,7 @@ export default function Profile() {
         </div>
       </div>
 
-      <div className="mt-20 px-4 flex justify-between items-start">
+      <div className="mt-6 px-4 flex justify-between items-start">
         <div>
           <h2 className="text-xl font-bold">Francisco Lucas</h2>
           <p className="text-gray-500">@Francis59482770</p>
@@ -69,6 +69,7 @@ export default function Profile() {
           initialName="Francisco Lucas"
           initialUserName="@Francis59482770"
           initialPassword="password123"
+          confirmPassword="password123"
         />
       )}
     </div>
