@@ -9,7 +9,7 @@ class RegisterSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['id', 'username', 'email', 'password','confirm_password', 'avatar']
+        fields = ['id', 'username', 'name', 'password', 'confirm_password', 'avatar']
 
     def validate(self, data):
         if data['password'] != data['confirm_password']:
@@ -21,7 +21,7 @@ class RegisterSerializer(serializers.ModelSerializer):
         avatar = validated_data.pop('avatar', None)
         user = User.objects.create_user(
             username=validated_data['username'],
-            email=validated_data['email'],
+            name=validated_data['name'],
             password=validated_data['password']
         )
 
@@ -31,12 +31,12 @@ class RegisterSerializer(serializers.ModelSerializer):
         
         return user
     
-    def validate_email(self, value):
-        if User.objects.filter(email=value).exists():
-            raise serializers.ValidationError("Este email já está em uso.")
+    def validate_username(self, value):
+        if User.objects.filter(username=value).exists():
+            raise serializers.ValidationError("Este nome de usuário já está em uso.")
         return value
     
 class UserProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['id', 'username', 'email', 'avatar']
+        fields = ['id', 'username', 'name', 'avatar']
