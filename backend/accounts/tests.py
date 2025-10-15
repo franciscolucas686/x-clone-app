@@ -17,14 +17,14 @@ class AuthTests(APITestCase):
 
         self.user_data = {
             'username': 'testuser',
-            'email': 'test@example.com',
+            'name': 'Test User',
             'password': 'StrongPassword123',
             'confirm_password': 'StrongPassword123'
         }
 
         self.user = User.objects.create_user(
             username='existinguser',
-            email='existing@email.com',
+            name='Existing User',
             password='ExistingPassword123'
         )
 
@@ -48,7 +48,7 @@ class AuthTests(APITestCase):
         avatar = self.generate_test_image()
         data_with_avatar = {
             'username': 'testuser_with_avatar',
-            'email': 'avatar@example.com',
+            'name': 'Francisco Lucas',
             'password': 'Avatarassword123',
             'confirm_password': 'Avatarassword123',
             'avatar': avatar
@@ -61,7 +61,7 @@ class AuthTests(APITestCase):
     def test_registration_password_mismatch(self):
         data = {
             'username': 'failuser', 
-            'email': 'failuser@example.com',
+            'name': 'failuser',
             'password': 'UltraSecurePass456!',
             'confirm_password': 'DifferentPass456!'
         }
@@ -87,13 +87,13 @@ class AuthTests(APITestCase):
         self.client.force_authenticate(user=self.user)
         new_avatar = self.generate_test_image()
         response = self.client.patch(self.profile_url, {
-            'username': 'updateduser',
-            'email': 'newemail@email.com',
+            'username': '@updateduser',
+            'name': 'New Name',
             'avatar': new_avatar
         }, format='multipart')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.user.refresh_from_db()
-        self.assertEqual(self.user.username, 'updateduser')
+        self.assertEqual(self.user.username, '@updateduser')
         self.assertTrue(bool(self.user.avatar))
         self.assertIn('avatar', response.data)
 
