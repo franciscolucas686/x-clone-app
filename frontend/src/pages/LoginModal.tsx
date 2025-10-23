@@ -24,7 +24,7 @@ export default function LoginModal({ onClose }: LoginModalProps) {
   return (
     <ModalLayout onClose={onClose} className="w-[400px]">
       <Xlogo />
-      <h2 className="text-xl my-6 text-center">Entrar no X</h2>
+      <h2 className="text-xl my-6 text-center cursor-default">Entrar no X</h2>
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-6">
         <input

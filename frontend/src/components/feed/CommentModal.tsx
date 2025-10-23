@@ -36,8 +36,8 @@ export default function CommentModal({ onClose, post }: CommentModalProps) {
             className="max-w-full h-auto w-12 rounded-full flex-shrink-0"
           />
           <div className="pb-4">
-            <h3 className="font-bold">{post.user}</h3>
-            <p className="text-gray-700 whitespace-normal">{post.content}</p>
+            <h3 className="font-bold cursor-pointer">{post.user}</h3>
+            <p className="text-gray-700 whitespace-normal cursor-default">{post.content}</p>
           </div>
         </div>
 

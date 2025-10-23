@@ -49,7 +49,7 @@ export default function RegisterModal({ onClose }: RegisterModalProps) {
   return (
     <ModalLayout onClose={onClose} className="w-[400px]">
       <Xlogo />
-      <h2 className="text-2xl mb-6 text-center">Criar sua conta</h2>
+      <h2 className="text-2xl mb-6 text-center cursor-default">Criar sua conta</h2>
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-6">
         <input

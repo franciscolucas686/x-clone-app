@@ -4,7 +4,7 @@ export default function NotificationsPage() {
   return (
     <div className="border-b border-gray-200">
       <div className="p-6">
-        <h2 className="text-xl font-bold">Notificações</h2>
+        <h2 className="text-xl font-bold cursor-default">Notificações</h2>
       </div>
       <div className="flex border-y last:border-b-0 border-gray-200 cursor-pointer hover:bg-gray-100 py-2 px-4 ">
         <Xlogo />

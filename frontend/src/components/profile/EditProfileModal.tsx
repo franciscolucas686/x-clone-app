@@ -32,7 +32,7 @@ export default function EditProfileModal({
 
   return (
     <ModalLayout onClose={onClose} className="max-w-[600px]">
-      <h2 className="text-xl font-bold mb-4 text-center">Editar perfil</h2>
+      <h2 className="text-xl font-bold mb-4 text-center cursor-default">Editar perfil</h2>
 
       <div className="relative w-2xs h-48 bg-gray-300 m-auto">
         <button className="absolute inset-0 flex items-center justify-center text-2xl text-gray-400 ">
