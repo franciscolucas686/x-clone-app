@@ -15,8 +15,8 @@ export default function Profile() {
           </div>
         </Link>
         <div className="ml-4">
-          <h2 className="text-xl font-bold">Francisco Lucas</h2>
-          <p className="text-gray-500 text-sm">
+          <h2 className="text-xl font-bold cursor-default">Francisco Lucas</h2>
+          <p className="text-gray-500 text-sm cursor-default">
             <span>0</span> posts
           </p>
         </div>
@@ -36,15 +36,15 @@ export default function Profile() {
 
       <div className="mt-6 px-4 flex justify-between items-start">
         <div>
-          <h2 className="text-xl font-bold">Francisco Lucas</h2>
-          <p className="text-gray-500">@Francis59482770</p>
-          <p className="text-gray-500 mt-2">Ingressou em maio de 2024</p>
+          <h2 className="text-xl font-bold cursor-default">Francisco Lucas</h2>
+          <p className="text-gray-500 cursor-default">@Francis59482770</p>
+          <p className="text-gray-500 mt-2 cursor-default">Ingressou em maio de 2024</p>
 
           <div className="flex space-x-4 mt-2">
-            <span>
+            <span className="cursor-default">
               <strong>4</strong> Seguindo
             </span>
-            <span>
+            <span className="cursor-default">
               <strong>0</strong> Seguidores
             </span>
           </div>
@@ -52,14 +52,14 @@ export default function Profile() {
 
         <button
           onClick={() => setIsModalOpen(true)}
-          className="px-4 py-2 border border-gray-300 rounded-full font-semibold hover:bg-gray-100 transition"
+          className="px-4 py-2 border border-gray-300 rounded-full font-semibold hover:bg-gray-100 transition cursor-pointer"
         >
           Editar perfil
         </button>
       </div>
 
       <div className="mt-4 border-b border-gray-200 flex text-gray-600 font-semibold">
-        <button className="p-3 px-6 hover:bg-gray-100 transition">Posts</button>
+        <button className="p-3 px-6 hover:bg-gray-100 transition cursor-pointer">Posts</button>
       </div>
 
       <div className="p-4 text-gray-500">Ainda não há posts</div>

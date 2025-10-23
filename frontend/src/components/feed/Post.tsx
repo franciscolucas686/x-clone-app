@@ -17,8 +17,8 @@ export default function Post({ user, content, avatar, onCommentClick }: PostProp
           className="max-w-full h-auto w-12 rounded-full flex-shrink-0"
         />
         <div className="ml-2">
-          <h3 className="font-bold">{user}</h3>
-          <p className="whitespace-normal">{content}</p>
+          <h3 className="font-bold cursor-default">{user}</h3>
+          <p className="whitespace-normal cursor-default">{content}</p>
           <div className="flex text-gray-500 text-sm max-w-md gap-10">
             <button
               onClick={(e) => {

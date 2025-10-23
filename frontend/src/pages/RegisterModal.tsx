@@ -11,7 +11,7 @@ export default function RegisterModal({ onClose }: RegisterModalProps) {
   const { login } = useAuth();
   const [form, setForm] = useState({
     username: "",
-    email: "",
+    name: "",
     password: "",
     confirmPassword: "",
   });
@@ -36,7 +36,7 @@ export default function RegisterModal({ onClose }: RegisterModalProps) {
         return;
       }
 
-      await login(form.email, form.password);
+      await login(form.username, form.password);
       onClose();
     } catch (err) {
       console.error("Registro falhou", err);
@@ -49,22 +49,22 @@ export default function RegisterModal({ onClose }: RegisterModalProps) {
   return (
     <ModalLayout onClose={onClose} className="w-[400px]">
       <Xlogo />
-      <h2 className="text-2xl mb-6 text-center">Criar sua conta</h2>
+      <h2 className="text-2xl mb-6 text-center cursor-default">Criar sua conta</h2>
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-6">
         <input
           type="text"
-          placeholder="Username"
+          placeholder="Nome do usuário ex: @lucas123"
           value={form.username}
           onChange={(e) => setForm({ ...form, username: e.target.value })}
           className="p-2 border rounded"
           required
         />
         <input
-          type="email"
-          placeholder="Email"
-          value={form.email}
-          onChange={(e) => setForm({ ...form, email: e.target.value })}
+          type="name"
+          placeholder="Nome"
+          value={form.name}
+          onChange={(e) => setForm({ ...form, name: e.target.value })}
           className="p-2 border rounded"
           required
         />
