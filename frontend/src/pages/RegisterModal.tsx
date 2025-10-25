@@ -52,20 +52,33 @@ export default function RegisterModal({ onClose }: RegisterModalProps) {
       <h2 className="text-2xl mb-6 text-center cursor-default">Criar sua conta</h2>
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-6">
-        <input
+        {/* <input
           type="text"
           placeholder="Nome do usuário ex: @lucas123"
           value={form.username}
           onChange={(e) => setForm({ ...form, username: e.target.value })}
           className="p-2 border rounded"
           required
-        />
+        /> */}
+
+        
+        <div className="flex items-center border rounded focus-within:border-blue-500 outline-none  box-border">
+          <span className="pl-3 text-gray-500 select-none">@</span>
+          <input
+            type="text"
+            placeholder="nome_do_usuario"
+            value={form.username}
+            onChange={(e) => setForm({ ...form, username: e.target.value })}
+            className="flex-1 py-2 outline-none bg-white"
+            required
+          />
+        </div>
         <input
           type="name"
           placeholder="Nome"
           value={form.name}
           onChange={(e) => setForm({ ...form, name: e.target.value })}
-          className="p-2 border rounded"
+          className="p-2 border rounded focus:border-blue-500 outline-none box-border"
           required
         />
         <input
@@ -73,7 +86,7 @@ export default function RegisterModal({ onClose }: RegisterModalProps) {
           placeholder="Senha"
           value={form.password}
           onChange={(e) => setForm({ ...form, password: e.target.value })}
-          className="p-2 border rounded"
+          className="p-2 border rounded  focus:border-blue-500 outline-none box-border"
           required
         />
         <input
@@ -83,7 +96,7 @@ export default function RegisterModal({ onClose }: RegisterModalProps) {
           onChange={(e) =>
             setForm({ ...form, confirmPassword: e.target.value })
           }
-          className="p-2 border rounded"
+          className="p-2 border rounded  focus:border-blue-500 outline-none box-border"
           required
         />
         {error && <p className="text-red-500 text-sm text-center">{error}</p>}
