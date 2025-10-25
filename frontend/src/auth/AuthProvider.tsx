@@ -13,8 +13,8 @@ export interface DecodedToken {
 
 export interface User {
   id: string;
+  name: string;
   username: string;
-  email: string;
   avatar?: string;
 }
 
@@ -56,11 +56,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     checkUser();
   }, []);
 
-  const login = async (email: string, password: string) => {
+  const login = async (username: string, password: string) => {
     setLoading(true);
     setError(null);
     try {
-      const res = await api.post("/token/", { email, password });
+      const res = await api.post("/token/", { username, password });
       const token = res.data.access;
       localStorage.setItem("access", token);
 
