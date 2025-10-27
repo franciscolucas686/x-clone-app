@@ -35,7 +35,7 @@ export default function RegisterModal({ onClose }: RegisterModalProps) {
         username: form.username,
         name: form.name,
         password: form.password,
-        confirmPassword: form.confirmPassword,
+        confirm_password: form.confirmPassword,
       });
 
       await login(form.username, form.password);
