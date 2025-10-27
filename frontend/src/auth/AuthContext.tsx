@@ -3,7 +3,7 @@ import type { User } from "./AuthProvider";
 
 interface AuthContextType {
   user: User | null;
-  login: (email: string, password: string) => Promise<void>;
+  login: (username: string, password: string) => Promise<void>;
   logout: () => void;
   loading: boolean;
   error: string | null;

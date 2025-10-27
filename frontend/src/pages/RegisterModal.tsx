@@ -1,4 +1,5 @@
 import { useState } from "react";
+import api from "../api/axios";
 import { useAuth } from "../auth/useAuth";
 import { Xlogo } from "../components/icons/Xlogo";
 import ModalLayout from "../layouts/ModalLayout";
@@ -20,27 +21,27 @@ export default function RegisterModal({ onClose }: RegisterModalProps) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
     setError(null);
 
-    try {
-      const res = await fetch("/api/register/", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
-      });
+    if (form.password !== form.confirmPassword) {
+      setError("As senhas não coincidem!");
+      return;
+    }
 
-      if (!res.ok) {
-        const errorData = await res.json();
-        setError(errorData.message || "Registro falhou");
-        return;
-      }
+    setLoading(true);
+
+    try {
+      await api.post("/register/", {
+        username: form.username,
+        name: form.name,
+        password: form.password,
+      });
 
       await login(form.username, form.password);
       onClose();
     } catch (err) {
-      console.error("Registro falhou", err);
-      setError("Erro ao registrar usuário!");
+      console.error("Erro ao registrar usuário", err);
+      setError("Erro ao registrar usuário. Tente outro nome de usuário.");
     } finally {
       setLoading(false);
     }
@@ -49,19 +50,11 @@ export default function RegisterModal({ onClose }: RegisterModalProps) {
   return (
     <ModalLayout onClose={onClose} className="w-[400px]">
       <Xlogo />
-      <h2 className="text-2xl mb-6 text-center cursor-default">Criar sua conta</h2>
+      <h2 className="text-2xl mb-6 text-center cursor-default">
+        Criar sua conta
+      </h2>
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-6">
-        {/* <input
-          type="text"
-          placeholder="Nome do usuário ex: @lucas123"
-          value={form.username}
-          onChange={(e) => setForm({ ...form, username: e.target.value })}
-          className="p-2 border rounded"
-          required
-        /> */}
-
-        
         <div className="flex items-center border rounded focus-within:border-blue-500 outline-none  box-border">
           <span className="pl-3 text-gray-500 select-none">@</span>
           <input
