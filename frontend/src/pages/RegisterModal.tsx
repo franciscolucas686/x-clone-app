@@ -35,14 +35,14 @@ export default function RegisterModal({ onClose }: RegisterModalProps) {
         username: form.username,
         name: form.name,
         password: form.password,
-        confirmPassword: form.confirmPassword,
+        confirm_password: form.confirmPassword,
       });
 
       await login(form.username, form.password);
       onClose();
     } catch (err) {
       console.error("Erro ao registrar usuário", err);
-      setError("Erro ao registrar usuário. Tente outro nome de usuário.");
+      setError("Erro ao registrar usuário. Tente novamente.");
     } finally {
       setLoading(false);
     }
