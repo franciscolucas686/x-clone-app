@@ -9,15 +9,15 @@ class RegisterSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['id', 'username', 'name', 'password', 'confirm_password', 'avatar']
+        fields = ['id', 'username', 'name', 'password', 'confirmPassword', 'avatar']
 
     def validate(self, data):
-        if data['password'] != data['confirm_password']:
-            raise serializers.ValidationError({"confirm_password": "As senhas não são iguais."})
+        if data['password'] != data['confirmPassword']:
+            raise serializers.ValidationError({"confirmPassword": "As senhas não são iguais."})
         return data
 
     def create(self, validated_data):
-        validated_data.pop('confirm_password')
+        validated_data.pop('confirmPassword')
         avatar = validated_data.pop('avatar', None)
         user = User.objects.create_user(
             username=validated_data['username'],
