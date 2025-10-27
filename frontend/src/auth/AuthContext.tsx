@@ -9,4 +9,10 @@ interface AuthContextType {
   error: string | null;
 }
 
-export const AuthContext = createContext<AuthContextType | null>(null);
+export const AuthContext = createContext<AuthContextType>({
+  user: null,
+  login: async () => {},
+  logout: () => {},
+  loading: false,
+  error: null,
+});

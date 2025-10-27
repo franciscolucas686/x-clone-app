@@ -1,5 +1,4 @@
 import axios from "axios";
-import { useAuth } from "../auth/useAuth";
 
 const api = axios.create({
   baseURL: "http://localhost:8000/api",
@@ -19,7 +18,8 @@ api.interceptors.response.use(
   (res) => res,
   (error) => {
     if (error.response?.status === 401) {
-      useAuth().logout();
+      localStorage.removeItem("access");
+      window.location.href = "/";
     }
     return Promise.reject(error);
   }
