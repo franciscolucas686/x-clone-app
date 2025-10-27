@@ -6,9 +6,6 @@ import { AuthContext } from "./AuthContext";
 export interface DecodedToken {
   user_id: string;
   exp: number;
-  iat: number;
-  token_type: string;
-  jti: string;
 }
 
 export interface User {
@@ -23,38 +20,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    const checkUser = async () => {
-      setLoading(true);
-      setError(null);
-      try
-      {const token = localStorage.getItem("access");
-      if (!token) {
-        setLoading(false);
-        return;
-      }
-        const decoded: DecodedToken = jwtDecode(token);
-        
-        if (decoded.exp * 1000 < Date.now()) {
-          localStorage.removeItem("access");
-          setUser(null);
-          setError("Sessão expirada. Faça login novamente.");
-          return;
-        }
-
-        const res = await api.get(`/users/${decoded.user_id}/`);
-        setUser(res.data);
-      } catch (error) {
-        console.error("Erro ao restaurar usuário", error);
-        localStorage.removeItem("access");
-        setUser(null);
-        setError("Sessão expirada. Faça login novamente.");
-      } finally {
-        setLoading(false);
-      }
-    };
-    checkUser();
-  }, []);
+  const logout = () => {
+    localStorage.removeItem("access");
+    setUser(null);
+  };
 
   const login = async (username: string, password: string) => {
     setLoading(true);
@@ -64,8 +33,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       const token = res.data.access;
       localStorage.setItem("access", token);
 
-      const decoded: DecodedToken = jwtDecode(token);
-      const userRes = await api.get(`/users/${decoded.user_id}/`);
+      const userRes = await api.get(`/profile/`);
       setUser(userRes.data);
     } catch (error) {
       console.error("erro ao fazer login", error);
@@ -76,10 +44,32 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
-  const logout = () => {
-    localStorage.removeItem("access");
-    setUser(null);
-  };
+  useEffect(() => {
+    const restoreUser = async () => {
+      const token = localStorage.getItem("access");
+      if (!token) {
+        logout();
+        return;
+      }
+
+      try {
+        const decoded: DecodedToken = jwtDecode(token);
+
+        if (decoded.exp * 1000 < Date.now()) {
+          logout();
+          return;
+        }
+
+        const userRes = await api.get(`/profile/`);
+        setUser(userRes.data);
+      } catch (err) {
+        console.error("Erro ao restaurar usuário", err);
+        logout();
+      }
+    };
+
+    restoreUser();
+  }, []);
 
   return (
     <AuthContext.Provider value={{ user, login, logout, loading, error }}>
