@@ -42,7 +42,7 @@ export default function RegisterModal({ onClose }: RegisterModalProps) {
       onClose();
     } catch (err) {
       console.error("Erro ao registrar usuário", err);
-      setError("Erro ao registrar usuário. Tente outro nome de usuário.");
+      setError("Erro ao registrar usuário. Tente novamente.");
     } finally {
       setLoading(false);
     }
