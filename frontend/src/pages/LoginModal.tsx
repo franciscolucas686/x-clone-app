@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useAuth } from "../auth/useAuth";
 import { Xlogo } from "../components/icons/Xlogo";
 import ModalLayout from "../layouts/ModalLayout";
+import { useNavigate } from "react-router-dom";
 
 interface LoginModalProps {
   onClose: () => void;
@@ -10,12 +11,14 @@ interface LoginModalProps {
 export default function LoginModal({ onClose }: LoginModalProps) {
   const { login, loading, error } = useAuth();
   const [form, setForm] = useState({ username: "", password: "" });
+  const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
       await login(form.username, form.password);
       onClose();
+      navigate("/feed");
     } catch (err) {
       console.error("Login falhou", err);
     }
