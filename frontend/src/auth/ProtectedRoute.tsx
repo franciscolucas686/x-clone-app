@@ -16,7 +16,7 @@ export default function PrivateRoute() {
 
   if (loading || showSpinner) {
     return (
-      <div className="fixed inset-0 flex items-center justify-center bg-gray-900">
+      <div className="fixed inset-0 flex items-center justify-center bg-white">
         <Spinner size={50} color="border-t-blue-500" />
       </div>
     );
