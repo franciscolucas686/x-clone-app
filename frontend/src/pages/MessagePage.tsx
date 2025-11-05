@@ -1,5 +1,5 @@
 import { MessageCircle } from "lucide-react";
-import MessageModal from "../components/message/MessageModal";
+import MessageModal from "../components/modal/MessageModal";
 import { useState } from "react";
 
 export default function MessagePage() {
