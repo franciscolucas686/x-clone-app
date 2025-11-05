@@ -1,50 +1,47 @@
-import { useState } from "react";
-import api from "../api/axios";
-import { useAuth } from "../auth/useAuth";
-import { Xlogo } from "../components/icons/Xlogo";
-import ModalLayout from "../layouts/ModalLayout";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { registerUser } from "../../features/auth/authThunks";
+import { useAppDispatch, useAppSelector } from "../../hooks/useAppSelector";
+import { Xlogo } from "../icons/Xlogo";
+import ModalLayout from "./ModalLayout";
 
 interface RegisterModalProps {
   onClose: () => void;
 }
 
 export default function RegisterModal({ onClose }: RegisterModalProps) {
-  const { login } = useAuth();
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+
+  const { user, loading, error } = useAppSelector((state) => state.auth);
+
   const [form, setForm] = useState({
     username: "",
     name: "",
     password: "",
     confirmPassword: "",
   });
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [localError, setLocalError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (user) {
+      onClose();
+      navigate("/feed");
+    }
+  }, [user, navigate, onClose]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError(null);
+    setLocalError(null);
 
     if (form.password !== form.confirmPassword) {
-      setError("As senhas não coincidem!");
+      setLocalError("As senhas não coincidem!");
       return;
     }
 
-    setLoading(true);
-
-    try {
-      await api.post("/register/", {
-        username: form.username,
-        name: form.name,
-        password: form.password,
-        confirm_password: form.confirmPassword,
-      });
-
-      await login(form.username, form.password);
-      onClose();
-    } catch (err) {
-      console.error("Erro ao registrar usuário", err);
-      setError("Erro ao registrar usuário. Tente novamente.");
-    } finally {
-      setLoading(false);
+    const resultAction = await dispatch(registerUser(form));
+    if (registerUser.rejected.match(resultAction) && resultAction.payload) {
+      setLocalError(resultAction.payload);
     }
   };
 
@@ -56,7 +53,7 @@ export default function RegisterModal({ onClose }: RegisterModalProps) {
       </h2>
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-6">
-        <div className="flex items-center border rounded focus-within:border-blue-500 outline-none  box-border">
+        <div className="flex items-center border rounded focus-within:border-blue-500 outline-none box-border">
           <span className="pl-3 text-gray-500 select-none">@</span>
           <input
             type="text"
@@ -67,22 +64,25 @@ export default function RegisterModal({ onClose }: RegisterModalProps) {
             required
           />
         </div>
+
         <input
-          type="name"
+          type="text"
           placeholder="Nome"
           value={form.name}
           onChange={(e) => setForm({ ...form, name: e.target.value })}
           className="p-2 border rounded focus:border-blue-500 outline-none box-border"
           required
         />
+
         <input
           type="password"
           placeholder="Senha"
           value={form.password}
           onChange={(e) => setForm({ ...form, password: e.target.value })}
-          className="p-2 border rounded  focus:border-blue-500 outline-none box-border"
+          className="p-2 border rounded focus:border-blue-500 outline-none box-border"
           required
         />
+
         <input
           type="password"
           placeholder="Confirmar senha"
@@ -90,10 +90,16 @@ export default function RegisterModal({ onClose }: RegisterModalProps) {
           onChange={(e) =>
             setForm({ ...form, confirmPassword: e.target.value })
           }
-          className="p-2 border rounded  focus:border-blue-500 outline-none box-border"
+          className="p-2 border rounded focus:border-blue-500 outline-none box-border"
           required
         />
-        {error && <p className="text-red-500 text-sm text-center">{error}</p>}
+
+        {(error || localError) && (
+          <p className="text-red-500 text-sm text-center">
+            {error || localError}
+          </p>
+        )}
+
         <button type="submit" disabled={loading} className="btn">
           {loading ? "Registrando..." : "Cadastrar"}
         </button>

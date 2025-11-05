@@ -1,6 +1,7 @@
 import { MoreHorizontal } from "lucide-react";
 import { useState } from "react";
 import UserMenu from "./UserMenu";
+import { useAppSelector } from "../../hooks/useAppSelector";
 
 type UseCardProps = {
   name: string;
@@ -8,8 +9,9 @@ type UseCardProps = {
   avatarUrl: string;
 };
 
-export default function UserCard({ name, username, avatarUrl }: UseCardProps) {
+export default function UserCard({ name, avatarUrl }: UseCardProps) {
   const [menuOpen, setMenuOpen] = useState(false);
+  const { user } = useAppSelector((state) => state.auth);
 
   return (
     <div className="relative" onClick={() => setMenuOpen(!menuOpen)}>
@@ -21,9 +23,9 @@ export default function UserCard({ name, username, avatarUrl }: UseCardProps) {
             className="max-w-full h-auto w-10 rounded-full flex-shrink-0"
           />
           <div className="hidden lg:block">
-            <p className="font-bold leading-tight truncate">{name}</p>
+            <p className="font-bold leading-tight truncate">{user.name}</p>
             <p className="text-gray-500 text-sm leading-tight truncate">
-              {username}
+              @{user.username}
             </p>
           </div>
         </div>
@@ -34,7 +36,7 @@ export default function UserCard({ name, username, avatarUrl }: UseCardProps) {
 
       {menuOpen && (
         <div className="absolute bottom-16 left-0 w-60 bg-white shadow-custom rounded-lg z-50">
-          <UserMenu username={username} />
+          <UserMenu />
         </div>
       )}
     </div>

@@ -1,6 +1,6 @@
-import { CloseIcon } from "../components/icons/CloseIcon";
 import type { ReactNode } from "react";
 import { createPortal } from "react-dom";
+import { CloseIcon } from "../icons/CloseIcon";
 
 interface ModalProps {
   onClose: () => void;

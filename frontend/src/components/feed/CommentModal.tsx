@@ -1,5 +1,5 @@
 import { useState } from "react";
-import ModalLayout from "../../layouts/ModalLayout";
+import ModalLayout from "../modal/ModalLayout";
 
 interface CommentModalProps {
   onClose: () => void;
@@ -10,8 +10,6 @@ interface CommentModalProps {
     avatar: string;
   };
 }
-
-
 
 export default function CommentModal({ onClose, post }: CommentModalProps) {
   const [comment, setComment] = useState("");
@@ -37,7 +35,9 @@ export default function CommentModal({ onClose, post }: CommentModalProps) {
           />
           <div className="pb-4">
             <h3 className="font-bold cursor-pointer">{post.user}</h3>
-            <p className="text-gray-700 whitespace-normal cursor-default">{post.content}</p>
+            <p className="text-gray-700 whitespace-normal cursor-default">
+              {post.content}
+            </p>
           </div>
         </div>
 
@@ -71,7 +71,6 @@ export default function CommentModal({ onClose, post }: CommentModalProps) {
             Comentar
           </button>
         </form>
-
       </div>
     </ModalLayout>
   );

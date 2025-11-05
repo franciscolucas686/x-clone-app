@@ -1,26 +1,27 @@
 import { useState } from "react";
-import { useAuth } from "../auth/useAuth";
-import { Xlogo } from "../components/icons/Xlogo";
-import ModalLayout from "../layouts/ModalLayout";
 import { useNavigate } from "react-router-dom";
+import { loginUser } from "../../features/auth/authThunks";
+import { useAppDispatch, useAppSelector } from "../../hooks/useAppSelector";
+import { Xlogo } from "../icons/Xlogo";
+import ModalLayout from "./ModalLayout";
 
 interface LoginModalProps {
   onClose: () => void;
 }
 
 export default function LoginModal({ onClose }: LoginModalProps) {
-  const { login, loading, error } = useAuth();
-  const [form, setForm] = useState({ username: "", password: "" });
+  const dispatch = useAppDispatch();
   const navigate = useNavigate();
+  const { loading, error } = useAppSelector((state) => state.auth);
+  const [form, setForm] = useState({ username: "", password: "" });
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    try {
-      await login(form.username, form.password);
+    const resultAction = await dispatch(loginUser(form));
+
+    if (loginUser.fulfilled.match(resultAction)) {
       onClose();
       navigate("/feed");
-    } catch (err) {
-      console.error("Login falhou", err);
     }
   };
 
@@ -30,7 +31,6 @@ export default function LoginModal({ onClose }: LoginModalProps) {
       <h2 className="text-xl my-6 text-center cursor-default">Entrar no X</h2>
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-6">
-
         <div className="flex items-center border rounded focus-within:border-blue-500 outline-none  box-border">
           <span className="pl-3 text-gray-500 select-none">@</span>
           <input

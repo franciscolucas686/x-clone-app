@@ -8,25 +8,95 @@ interface LoginCredentials {
   password: string;
 }
 
+interface RegisterCredentials {
+  username: string;
+  name: string;
+  password: string;
+  confirmPassword: string;
+}
+
 interface LoginResponse {
   token: string;
   user: User;
 }
 
+interface UpdateProfilePayload {
+  name?: string;
+  username?: string;
+  password?: string;
+  confirm_password?: string;
+  avatar?: File;
+}
+
 export const loginUser = createAsyncThunk<
-  LoginResponse,      
-  LoginCredentials   
->(
-  "auth/loginUser",
-  async (credentials) => {
+  LoginResponse,
+  LoginCredentials,
+  { rejectValue: string }
+>("auth/loginUser", async (credentials, { rejectWithValue }) => {
+  try {
     const res = await api.post("/token/", credentials);
-    const token = res.data.access;
+    const token = res.data.access as string;
+
+    const userRes = await api.get<User>("/profile/", {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+
+    
+    console.log("🔍 Resposta do /profile/:", userRes.data);
+
+    return { token, user: userRes.data };
+  } catch (error) {
+    if (error instanceof Error) {
+      return rejectWithValue("Usuário ou senha incorretos!");
+    }
+    return rejectWithValue("Erro inesperado ao tentar fazer login.");
+  }
+});
+
+export const registerUser = createAsyncThunk<
+  LoginResponse,
+  RegisterCredentials,
+  { rejectValue: string }
+>("auth/registerUser", async (credentials, { rejectWithValue }) => {
+  try {
+    await api.post("/register/", {
+      username: credentials.username,
+      name: credentials.name,
+      password: credentials.password,
+      confirm_password: credentials.confirmPassword,
+    });
+
+    const loginRes = await api.post("/token/", {
+      username: credentials.username,
+      password: credentials.password,
+    });
+
+    const token = loginRes.data.access;
+    localStorage.setItem("access", token);
+
     const userRes = await api.get("/profile/", {
       headers: { Authorization: `Bearer ${token}` },
     });
+
     return { token, user: userRes.data } as LoginResponse;
+  } catch (err: unknown) {
+    if (typeof err === "object" && err !== null && "response" in err) {
+      const axiosError = err as { response?: { data?: unknown } };
+
+      const message =
+        typeof axiosError.response?.data === "string"
+          ? axiosError.response.data
+          : JSON.stringify(axiosError.response?.data);
+
+      if (message.includes("already exists")) {
+        return rejectWithValue("Nome de usuário já existe!");
+      }
+      return rejectWithValue("Erro ao registrar usuário. Tente novamente.");
+    }
+
+    return rejectWithValue("Erro desconhecido ao registrar usuário.");
   }
-);
+});
 
 export const restoreUser = createAsyncThunk<User | null>(
   "auth/restoreUser",
@@ -37,6 +107,28 @@ export const restoreUser = createAsyncThunk<User | null>(
     const res = await api.get("/profile/", {
       headers: { Authorization: `Bearer ${token}` },
     });
+
     return res.data;
   }
 );
+
+export const updateProfile = createAsyncThunk<
+  User,
+  UpdateProfilePayload,
+  { rejectValue: string }
+>("auth/updateProfile", async (data, { rejectWithValue }) => {
+  try {
+    const res = await api.patch<User>("/profile/", data);
+    return res.data;
+  } catch (err: unknown) {
+    if (typeof err === "object" && err !== null && "response" in err) {
+      const message =
+        (err as { response?: { data?: { detail?: string } } }).response?.data
+          ?.detail ?? "Erro ao atualizar perfil.";
+      return rejectWithValue(message);
+    }
+    return rejectWithValue("Erro desconhecido.");
+  }
+});
+
+

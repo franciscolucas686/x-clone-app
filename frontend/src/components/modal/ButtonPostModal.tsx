@@ -1,4 +1,4 @@
-import ModalLayout from "../../layouts/ModalLayout";
+import ModalLayout from "./ModalLayout";
 
 interface ButtonPostModalProps {
   onClose: () => void;
@@ -7,7 +7,6 @@ interface ButtonPostModalProps {
 export default function ButtonPostModal({ onClose }: ButtonPostModalProps) {
   return (
     <ModalLayout onClose={onClose} className="max-w-[400px]">
-
       <div className="p-2 border-gray-200 mt-4">
         <div className="flex items-center space-x-2 min-w-0 border-gray-200 pb-4">
           <img
@@ -23,8 +22,7 @@ export default function ButtonPostModal({ onClose }: ButtonPostModalProps) {
         <div className="flex justify-end pt-4">
           <button className="btn px-4 py-2">Postar</button>
         </div>
-        </div>
-
+      </div>
     </ModalLayout>
   );
 }
