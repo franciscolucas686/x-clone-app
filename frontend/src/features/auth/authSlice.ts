@@ -8,6 +8,7 @@ export interface User {
   username: string;
   name: string;
   avatar?: string;
+  joined_display?: string;
 }
 
 interface AuthState {

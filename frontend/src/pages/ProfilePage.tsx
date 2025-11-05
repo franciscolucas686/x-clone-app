@@ -3,6 +3,7 @@ import { useAppDispatch, useAppSelector } from "../hooks/useAppSelector";
 import { openModal } from "../features/modal/modalSlice";
 import { Link } from "react-router-dom";
 import { ModalRoot } from "../components/modal/ModalRoot";
+import { formatJoinedDate } from "../utils/date";
 
 export default function Profile() {
   const dispatch = useAppDispatch();
@@ -41,7 +42,7 @@ export default function Profile() {
         <div>
           <h2 className="text-xl font-bold cursor-default">{user.name}</h2>
           <p className="text-gray-500 cursor-default">@{user.username}</p>
-          <p className="text-gray-500 mt-2 cursor-default">Ingressou em maio de 2024</p>
+          <p className="text-gray-500 mt-2 cursor-default">Ingressou em {user.joined_display ? formatJoinedDate(user.joined_display) : ""}</p>
 
           <div className="flex space-x-4 mt-2">
             <span className="cursor-default">
