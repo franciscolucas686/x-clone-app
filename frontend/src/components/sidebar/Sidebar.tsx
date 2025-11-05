@@ -2,7 +2,7 @@ import { Bell, Home, Mail, MoreHorizontal, Search, User } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { Xlogo } from "../icons/Xlogo";
-import ButtonPostModal from "./ButtonPostModal";
+import ButtonPostModal from "../modal/ButtonPostModal";
 import MoreMenu from "./MoreMenu";
 import UserCard from "./UserCard";
 
@@ -49,7 +49,7 @@ export default function Sidebar() {
         <nav className="space-y-4 w-full">
           {navItems.map(({ icon: Icon, label, path }) =>
             label === "Mais" ? (
-              <div key={label} ref={menuRef} className="relative" >
+              <div key={label} ref={menuRef} className="relative">
                 <button
                   key={label}
                   onClick={() => setShowMoreMenu((prev) => !prev)}
@@ -57,10 +57,10 @@ export default function Sidebar() {
                 >
                   <Icon size={30} className="mr-5" /> <span>{label}</span>
                 </button>
-                {showMoreMenu && <MoreMenu onClose={() => setShowMoreMenu(false)} /> }
+                {showMoreMenu && (
+                  <MoreMenu onClose={() => setShowMoreMenu(false)} />
+                )}
               </div>
-              
-
             ) : (
               <Link
                 key={label}

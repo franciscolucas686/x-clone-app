@@ -1,16 +1,14 @@
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../../auth/useAuth";
+import { logout } from "../../features/auth/authSlice";
+import { useAppDispatch, useAppSelector } from "../../hooks/useAppSelector";
 
-type UserMenuProps = {
-  username: string;
-};
-
-export default function UserMenu({ username }: UserMenuProps) {
+export default function UserMenu() {
+  const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const { logout } = useAuth();
+  const { user } = useAppSelector((state) => state.auth);
 
   const handleLogout = () => {
-    logout();
+    dispatch(logout());
     navigate("/");
   };
   return (
@@ -19,7 +17,7 @@ export default function UserMenu({ username }: UserMenuProps) {
         onClick={handleLogout}
         className="px-4 py-2 text-left rounded-lg cursor-pointer hover:bg-gray-100 font-semibold transition-colors duration-200 ease-in-out"
       >
-        Sair de {username}
+        Sair de {user?.name}
       </button>
     </div>
   );
