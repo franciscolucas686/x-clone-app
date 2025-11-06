@@ -5,11 +5,16 @@ import { closeModal } from "../../features/modal/modalSlice";
 import { useAppDispatch, useAppSelector } from "../../hooks/useAppSelector";
 import { CloseIcon } from "../icons/CloseIcon";
 import ModalLayout from "./ModalLayout";
+import {clearError} from "../../features/auth/authSlice";
 
 export default function EditProfileModal() {
   const dispatch = useAppDispatch();
 
   const { user, loading, error } = useAppSelector((state) => state.auth);
+
+  useEffect(() => {
+    dispatch(clearError());
+  }, [dispatch]);
 
   const defaultAvatar = "http://localhost:8000/media/avatars/default.png";
   const currentAvatar = user?.avatar || defaultAvatar;
