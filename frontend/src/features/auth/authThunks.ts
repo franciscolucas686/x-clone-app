@@ -25,7 +25,7 @@ interface UpdateProfilePayload {
   username?: string;
   password?: string;
   confirm_password?: string;
-  avatar?: File;
+  avatar?: File | null;
 }
 
 export const loginUser = createAsyncThunk<
@@ -41,7 +41,6 @@ export const loginUser = createAsyncThunk<
       headers: { Authorization: `Bearer ${token}` },
     });
 
-    
     console.log("🔍 Resposta do /profile/:", userRes.data);
 
     return { token, user: userRes.data };
@@ -118,10 +117,25 @@ export const updateProfile = createAsyncThunk<
   { rejectValue: string }
 >("auth/updateProfile", async (data, { rejectWithValue }) => {
   try {
-    const res = await api.patch<User>("/profile/", data);
+    const formData = new FormData();
+    Object.entries(data).forEach(([key, value]) => {
+      if (value !== undefined && value !== null) {
+        formData.append(key, value instanceof File ? value : String(value));
+      }
+    });
+
+    const res = await api.patch<User>("/profile/", formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+
     return res.data;
   } catch (err: unknown) {
-    if (typeof err === "object" && err !== null && "response" in err) {
+    if (
+      typeof err === "object" &&
+      err !== null &&
+      "response" in err &&
+      (err as { response?: { data?: { detail?: string } } }).response?.data
+    ) {
       const message =
         (err as { response?: { data?: { detail?: string } } }).response?.data
           ?.detail ?? "Erro ao atualizar perfil.";
@@ -130,5 +144,3 @@ export const updateProfile = createAsyncThunk<
     return rejectWithValue("Erro desconhecido.");
   }
 });
-
-
