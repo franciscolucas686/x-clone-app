@@ -9,7 +9,9 @@ class Follow(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        unique_together = ('follower', 'following')
+        constraints = [
+            models.UniqueConstraint(fields=['follower', 'following'], name='unique_follow_relation')
+        ]
 
     def __str__(self):
         return f"{self.follower} segue {self.following}"
