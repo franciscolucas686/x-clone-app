@@ -13,7 +13,7 @@ export default function UserCard() {
         <div className="flex items-center space-x-2 min-w-0">
           <img
             src={user?.avatar}
-            className="max-w-full h-auto w-10 rounded-full flex-shrink-0"
+            className="max-w-full object-cover h-10 w-10 rounded-full flex-shrink-0 overflow-y-hidden"
           />
           <div className="hidden lg:block">
             <p className="font-bold leading-tight truncate">{user?.name}</p>
