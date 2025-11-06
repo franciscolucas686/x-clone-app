@@ -8,12 +8,15 @@ interface ModalProps {
   className?: string;
 }
 
-export default function ModalLayout({ onClose, children, className }: ModalProps) {
+export default function ModalLayout({
+  onClose,
+  children,
+  className,
+}: ModalProps) {
   const modalRef = useRef<HTMLDivElement>(null);
   const clickStartedOutside = useRef(false);
 
   const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
-    // Marca que o clique começou fora do modal
     if (modalRef.current && !modalRef.current.contains(e.target as Node)) {
       clickStartedOutside.current = true;
     } else {
@@ -22,8 +25,11 @@ export default function ModalLayout({ onClose, children, className }: ModalProps
   };
 
   const handleMouseUp = (e: React.MouseEvent<HTMLDivElement>) => {
-    // Só fecha se o clique começou e terminou fora do modal
-    if (clickStartedOutside.current && modalRef.current && !modalRef.current.contains(e.target as Node)) {
+    if (
+      clickStartedOutside.current &&
+      modalRef.current &&
+      !modalRef.current.contains(e.target as Node)
+    ) {
       onClose();
     }
     clickStartedOutside.current = false;
@@ -37,7 +43,9 @@ export default function ModalLayout({ onClose, children, className }: ModalProps
     >
       <div
         ref={modalRef}
-        className={`relative bg-white rounded-2xl w-[90%] max-w-[600px] max-h-[90%] overflow-auto p-6 z-50 ${className ?? ""}`}
+        className={`relative bg-white rounded-2xl w-[90%] max-w-[600px] max-h-[90%] overflow-auto p-6 z-50 ${
+          className ?? ""
+        }`}
       >
         <button
           type="button"

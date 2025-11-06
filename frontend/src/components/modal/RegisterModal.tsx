@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { clearError } from "../../features/auth/authSlice";
 import { registerUser } from "../../features/auth/authThunks";
 import { useAppDispatch, useAppSelector } from "../../hooks/useAppSelector";
 import { Xlogo } from "../icons/Xlogo";
 import ModalLayout from "./ModalLayout";
-import {clearError} from "../../features/auth/authSlice";
 
 interface RegisterModalProps {
   onClose: () => void;

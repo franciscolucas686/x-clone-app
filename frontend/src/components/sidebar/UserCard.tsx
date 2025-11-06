@@ -1,7 +1,7 @@
 import { MoreHorizontal } from "lucide-react";
 import { useState } from "react";
-import UserMenu from "./UserMenu";
 import { useAppSelector } from "../../hooks/useAppSelector";
+import UserMenu from "./UserMenu";
 
 export default function UserCard() {
   const [menuOpen, setMenuOpen] = useState(false);

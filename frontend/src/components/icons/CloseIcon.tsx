@@ -6,7 +6,9 @@ export const CloseIcon = ({ className }: CloseIconProps) => (
   <svg
     role="img"
     xmlns="http://www.w3.org/2000/svg"
-    className={`w-10 h-10 p-1 mx-auto cursor-pointer hover:bg-neutral-700 hover:text-white transition-colors duration-200 rounded-full ${className || ""}`}
+    className={`w-10 h-10 p-1 mx-auto cursor-pointer hover:bg-neutral-700 hover:text-white transition-colors duration-200 rounded-full ${
+      className || ""
+    }`}
     fill="currentColor"
     viewBox="0 0 1024 1024"
   >
