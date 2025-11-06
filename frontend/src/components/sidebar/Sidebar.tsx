@@ -80,11 +80,7 @@ export default function Sidebar() {
         </button>
       </div>
 
-      <UserCard
-        name="Francisco Lucas"
-        username="@francisco"
-        avatarUrl="https://avatars.githubusercontent.com/u/15079328?v=4"
-      />
+      <UserCard />
 
       {isModalOpen && <ButtonPostModal onClose={() => setIsModalOpen(false)} />}
     </div>

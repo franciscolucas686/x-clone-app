@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { clearError } from "../../features/auth/authSlice";
 import { registerUser } from "../../features/auth/authThunks";
 import { useAppDispatch, useAppSelector } from "../../hooks/useAppSelector";
 import { Xlogo } from "../icons/Xlogo";
@@ -22,6 +23,10 @@ export default function RegisterModal({ onClose }: RegisterModalProps) {
     confirmPassword: "",
   });
   const [localError, setLocalError] = useState<string | null>(null);
+
+  useEffect(() => {
+    dispatch(clearError());
+  }, [dispatch]);
 
   useEffect(() => {
     if (user) {

@@ -1,5 +1,6 @@
 import { Camera } from "lucide-react";
 import { useEffect, useState } from "react";
+import { clearError } from "../../features/auth/authSlice";
 import { updateProfile } from "../../features/auth/authThunks";
 import { closeModal } from "../../features/modal/modalSlice";
 import { useAppDispatch, useAppSelector } from "../../hooks/useAppSelector";
@@ -10,6 +11,10 @@ export default function EditProfileModal() {
   const dispatch = useAppDispatch();
 
   const { user, loading, error } = useAppSelector((state) => state.auth);
+
+  useEffect(() => {
+    dispatch(clearError());
+  }, [dispatch]);
 
   const defaultAvatar = "http://localhost:8000/media/avatars/default.png";
   const currentAvatar = user?.avatar || defaultAvatar;
@@ -87,7 +92,7 @@ export default function EditProfileModal() {
             className="absolute top-2 right-2 bg-white rounded-full shadow-md hover:bg-gray-100 transition z-20"
             title="Remover imagem"
           >
-              <CloseIcon className='!hover:text-current !transition-none' />
+            <CloseIcon className="!hover:text-current !transition-none" />
           </button>
         )}
       </div>

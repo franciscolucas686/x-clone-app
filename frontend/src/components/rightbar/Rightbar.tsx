@@ -12,14 +12,15 @@ function PremiumPage({ onClose }: { onClose: () => void }) {
       </button>
 
       <div className="pt-20 pb-10 text-center px-4">
-        <h1 className="text-4xl font-extrabold mb-4 cursor-default">Upgrade para Premium</h1>
+        <h1 className="text-4xl font-extrabold mb-4 cursor-default">
+          Upgrade para Premium
+        </h1>
         <p className="text-gray-600 text-lg cursor-default">
           Escolha o plano ideal para desbloquear todos os recursos.
         </p>
       </div>
 
       <div className="flex flex-wrap justify-center gap-6 max-w-7xl px-4 mb-10">
-
         <div className="bg-white border border-gray-200 rounded-2xl shadow-lg p-6 hover:shadow-xl hover:border-blue-500 transition w-full sm:w-[48%] lg:w-[30%] min-w-[320px] max-w-[450px] flex flex-col  cursor-pointer">
           <h2 className="text-xl font-semibold mb-2 cursor-pointer">Básico</h2>
           <p className="text-3xl font-bold mb-2 cursor-pointer">R$ 9,00</p>
@@ -50,7 +51,9 @@ function PremiumPage({ onClose }: { onClose: () => void }) {
         </div>
 
         <div className="bg-white border border-gray-200 rounded-2xl shadow-lg p-6 hover:shadow-xl hover:border-blue-500 transition w-full sm:w-[48%] lg:w-[30%] min-w-[320px] max-w-[450px] cursor-pointer">
-          <h2 className="text-xl font-semibold mb-2 cursor-pointer">Premium+</h2>
+          <h2 className="text-xl font-semibold mb-2 cursor-pointer">
+            Premium+
+          </h2>
           <p className="text-3xl font-bold mb-2 cursor-pointer">R$ 140,00</p>
           <p className="text-sm text-gray-500 mb-4 cursor-pointer">por mês</p>
           <ul className="text-gray-600 text-sm space-y-1 mb-6">
@@ -74,7 +77,9 @@ export default function Rightbar() {
   return (
     <div className="space-y-4">
       <div className="border border-gray-200 rounded-lg p-4">
-        <h2 className="font-bold text-lg mb-2 cursor-default">Assine o Premium</h2>
+        <h2 className="font-bold text-lg mb-2 cursor-default">
+          Assine o Premium
+        </h2>
         <p className="text-sm text-gray-600 mb-3 cursor-default">
           Assine para desbloquear novos recursos e, se elegível, receba uma
           parte da receita.
@@ -88,7 +93,9 @@ export default function Rightbar() {
       </div>
 
       <div className="border border-gray-200 rounded-lg">
-        <h2 className="font-bold text-2xl p-4 cursor-default">O que está acontecendo</h2>
+        <h2 className="font-bold text-2xl p-4 cursor-default">
+          O que está acontecendo
+        </h2>
         <ul className="text-sm">
           <li className="flex justify-between items-center hover:bg-gray-100 p-4 transition-colors duration-200 ease-in-out cursor-pointer">
             <div>

@@ -8,7 +8,7 @@ export default function Feed() {
       id: i,
       user: `@roberto3474${i + 1}`,
       content: `Esse é o post número ${i + 1}.`,
-      avatar:`https://i.pravatar.cc/150?img=${i + 1}`
+      avatar: `https://i.pravatar.cc/150?img=${i + 1}`,
     }))
   );
 

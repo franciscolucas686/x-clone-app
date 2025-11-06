@@ -7,7 +7,12 @@ type PostProps = {
   onCommentClick?: () => void;
 };
 
-export default function Post({ user, content, avatar, onCommentClick }: PostProps) {
+export default function Post({
+  user,
+  content,
+  avatar,
+  onCommentClick,
+}: PostProps) {
   return (
     <div className="px-4 py-2 border-b border-gray-200 hover:bg-gray-50 cursor-pointer">
       <div className="flex items-center space-x-2 min-w-0 pb-4">

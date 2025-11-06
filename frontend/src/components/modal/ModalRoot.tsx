@@ -1,9 +1,9 @@
 import { useDispatch, useSelector } from "react-redux";
 import type { RootState } from "../../app/store";
 import { closeModal } from "../../features/modal/modalSlice";
+import EditProfileModal from "./EditProfileModal";
 import LoginModal from "./LoginModal";
 import RegisterModal from "./RegisterModal";
-import  EditProfileModal  from "./EditProfileModal";
 
 export function ModalRoot() {
   const dispatch = useDispatch();
@@ -13,7 +13,6 @@ export function ModalRoot() {
     return <LoginModal onClose={() => dispatch(closeModal())} />;
   if (current === "register")
     return <RegisterModal onClose={() => dispatch(closeModal())} />;
-  if (current === "editProfile")
-    return <EditProfileModal />;
+  if (current === "editProfile") return <EditProfileModal />;
   return null;
 }

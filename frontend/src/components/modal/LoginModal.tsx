@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { clearError } from "../../features/auth/authSlice";
 import { loginUser } from "../../features/auth/authThunks";
 import { useAppDispatch, useAppSelector } from "../../hooks/useAppSelector";
 import { Xlogo } from "../icons/Xlogo";
@@ -14,6 +15,10 @@ export default function LoginModal({ onClose }: LoginModalProps) {
   const navigate = useNavigate();
   const { loading, error } = useAppSelector((state) => state.auth);
   const [form, setForm] = useState({ username: "", password: "" });
+
+  useEffect(() => {
+    dispatch(clearError());
+  }, [dispatch]);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();

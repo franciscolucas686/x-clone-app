@@ -1,12 +1,12 @@
 import {
   Bookmark,
   CreditCard,
-  Globe,
-  MessageCircle,
-  Users,
   DollarSign,
+  Globe,
   Megaphone,
+  MessageCircle,
   Settings,
+  Users,
 } from "lucide-react";
 
 type MoreMenuProps = {
