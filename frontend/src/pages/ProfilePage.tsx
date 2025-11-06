@@ -31,7 +31,7 @@ export default function Profile() {
         <div className="h-40 bg-gray-300" />
         <div className="flex items-end px-4 -mt-16">
           <img
-            src={user.avatar || "https://via.placeholder.com/150"}
+            src={user.avatar}
             alt={user.name}
             className="w-32 h-32 rounded-full border-4 border-white"
           />
