@@ -97,6 +97,32 @@ class AuthTests(APITestCase):
         self.assertTrue(bool(self.user.avatar))
         self.assertIn('avatar', response.data)
 
+    def test_profile_update_with_password_success(self):
+        self.client.force_authenticate(user=self.user)
+        data = {
+            'name': 'Updated Name',
+            'password': 'NewSecurePass123!',
+            'confirm_password': 'NewSecurePass123!'
+        }
+        response = self.client.patch(self.profile_url, data, format='multipart')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.user.refresh_from_db()
+        self.assertEqual(self.user.name, 'Updated Name')
+        self.assertTrue(self.user.check_password('NewSecurePass123!'))
+
+
+    def test_profile_update_with_password_mismatch(self):
+        self.client.force_authenticate(user=self.user)
+        data = {
+            'name': 'Another Name',
+            'password': 'OnePassword123!',
+            'confirm_password': 'DifferentPassword456!'
+        }
+        response = self.client.patch(self.profile_url, data, format='multipart')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn('confirm_password', response.data)
+
+
     def test_token_expired(self):
         expired_token = AccessToken.for_user(self.user)
         expired_token.set_exp(lifetime=timedelta(seconds=-1))
