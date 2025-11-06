@@ -33,7 +33,7 @@ export default function Profile() {
           <img
             src={user.avatar}
             alt={user.name}
-            className="w-32 h-32 rounded-full border-4 border-white"
+            className="w-32 h-32 object-cover rounded-full border-4 border-white"
           />
         </div>
       </div>

@@ -1,8 +1,9 @@
-import { Camera, X } from "lucide-react";
+import { Camera } from "lucide-react";
 import { useEffect, useState } from "react";
 import { updateProfile } from "../../features/auth/authThunks";
 import { closeModal } from "../../features/modal/modalSlice";
 import { useAppDispatch, useAppSelector } from "../../hooks/useAppSelector";
+import { CloseIcon } from "../icons/CloseIcon";
 import ModalLayout from "./ModalLayout";
 
 export default function EditProfileModal() {
@@ -62,14 +63,14 @@ export default function EditProfileModal() {
         Editar perfil
       </h2>
 
-      <div className="relative w-48 h-48 m-auto">
+      <div className="relative w-48 h-48 m-auto rounded-full">
         <img
           src={previewUrl}
           alt={form.name || "Foto de perfil"}
-          className="w-full h-full rounded-full object-cover border-4 border-white bg-gray-100"
+          className="w-full h-full object-cover border-4 border-white bg-gray-100 rounded-full overflow-hidden "
         />
 
-        <label className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-30 rounded-full cursor-pointer transition-colors hover:bg-opacity-50">
+        <label className="absolute inset-0 flex items-center justify-center rounded-full cursor-pointer bg-black/30  hover:bg-black/50 duration-200 ease-in-out z-10">
           <Camera size={40} className="text-white" />
           <input
             type="file"
@@ -83,10 +84,10 @@ export default function EditProfileModal() {
           <button
             type="button"
             onClick={handleRemoveAvatar}
-            className="absolute top-2 right-2 bg-white rounded-full p-1 shadow-md hover:bg-gray-100 transition"
+            className="absolute top-2 right-2 bg-white rounded-full shadow-md hover:bg-gray-100 transition z-20"
             title="Remover imagem"
           >
-            <X size={20} className="text-black" />
+              <CloseIcon className='!hover:text-current !transition-none' />
           </button>
         )}
       </div>
