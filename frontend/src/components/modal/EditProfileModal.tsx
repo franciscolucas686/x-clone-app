@@ -1,5 +1,5 @@
-import { Camera } from "lucide-react";
-import { useState } from "react";
+import { Camera, X } from "lucide-react";
+import { useEffect, useState } from "react";
 import { updateProfile } from "../../features/auth/authThunks";
 import { closeModal } from "../../features/modal/modalSlice";
 import { useAppDispatch, useAppSelector } from "../../hooks/useAppSelector";
@@ -7,22 +7,47 @@ import ModalLayout from "./ModalLayout";
 
 export default function EditProfileModal() {
   const dispatch = useAppDispatch();
+
   const { user, loading, error } = useAppSelector((state) => state.auth);
+
+  const defaultAvatar = "http://localhost:8000/media/avatars/default.png";
+  const currentAvatar = user?.avatar || defaultAvatar;
 
   const [form, setForm] = useState({
     name: user?.name ?? "",
     username: user?.username ?? "",
     password: "",
-    confirmPassword: "",
+    confirm_password: "",
+    avatar: null as File | null,
   });
+
+  const [previewUrl, setPreviewUrl] = useState<string>(currentAvatar);
+
+  useEffect(() => {
+    if (form.avatar) {
+      const objectUrl = URL.createObjectURL(form.avatar);
+      setPreviewUrl(objectUrl);
+      return () => URL.revokeObjectURL(objectUrl);
+    } else {
+      setPreviewUrl(currentAvatar);
+    }
+  }, [form.avatar, currentAvatar]);
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) setForm({ ...form, avatar: file });
+  };
+
+  const handleRemoveAvatar = () => {
+    setForm({ ...form, avatar: null });
+    setPreviewUrl(currentAvatar);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    if (form.password !== form.confirmPassword) return;
+    if (form.password && form.password !== form.confirm_password) return;
 
     const result = await dispatch(updateProfile(form));
-
     if (updateProfile.fulfilled.match(result)) {
       dispatch(closeModal());
     }
@@ -37,15 +62,33 @@ export default function EditProfileModal() {
         Editar perfil
       </h2>
 
-      <div className="relative w-2xs h-48 bg-gray-300 m-auto">
-        <button className="absolute inset-0 flex items-center justify-center text-2xl text-gray-400">
-          <div className="m-2 rounded-full bg-gray-100 hover:bg-neutral-400 opacity-50 transition-colors cursor-pointer">
-            <Camera
-              size={40}
-              className="p-2 text-gray-400 hover:text-gray-200 bg-opacity-50 transition-colors"
-            />
-          </div>
-        </button>
+      <div className="relative w-48 h-48 m-auto">
+        <img
+          src={previewUrl}
+          alt={form.name || "Foto de perfil"}
+          className="w-full h-full rounded-full object-cover border-4 border-white bg-gray-100"
+        />
+
+        <label className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-30 rounded-full cursor-pointer transition-colors hover:bg-opacity-50">
+          <Camera size={40} className="text-white" />
+          <input
+            type="file"
+            className="hidden"
+            accept="image/*"
+            onChange={handleFileChange}
+          />
+        </label>
+
+        {form.avatar && (
+          <button
+            type="button"
+            onClick={handleRemoveAvatar}
+            className="absolute top-2 right-2 bg-white rounded-full p-1 shadow-md hover:bg-gray-100 transition"
+            title="Remover imagem"
+          >
+            <X size={20} className="text-black" />
+          </button>
+        )}
       </div>
 
       <form onSubmit={handleSubmit} className="mt-6 flex flex-col gap-6 px-2">
@@ -58,6 +101,7 @@ export default function EditProfileModal() {
             className="w-full p-2 border border-gray-200 rounded"
           />
         </div>
+
         <div>
           <label className="block text-gray-700">Usuário</label>
           <input
@@ -67,6 +111,7 @@ export default function EditProfileModal() {
             className="w-full p-2 border border-gray-200 rounded"
           />
         </div>
+
         <div>
           <label className="block text-gray-700">Senha</label>
           <input
@@ -76,13 +121,14 @@ export default function EditProfileModal() {
             className="w-full p-2 border border-gray-200 rounded"
           />
         </div>
+
         <div>
           <label className="block text-gray-700">Confirmar senha</label>
           <input
             type="password"
-            value={form.confirmPassword}
+            value={form.confirm_password}
             onChange={(e) =>
-              setForm({ ...form, confirmPassword: e.target.value })
+              setForm({ ...form, confirm_password: e.target.value })
             }
             className="w-full p-2 border border-gray-200 rounded"
           />
@@ -93,7 +139,7 @@ export default function EditProfileModal() {
         <button
           type="submit"
           disabled={loading}
-          className="btn self-end bg-black text-white px-6 py-2 rounded"
+          className="btn self-end bg-black text-white px-6 py-2 rounded transition hover:bg-gray-800"
         >
           {loading ? "Salvando..." : "Salvar"}
         </button>
