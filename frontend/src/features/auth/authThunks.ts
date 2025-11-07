@@ -1,7 +1,7 @@
 // authThunks.ts
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import api from "../../api/axios";
-import type { User } from "./authSlice";
+import type { User } from "../users/types";
 
 interface LoginCredentials {
   username: string;

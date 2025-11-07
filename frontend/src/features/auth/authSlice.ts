@@ -2,15 +2,7 @@ import type { PayloadAction } from "@reduxjs/toolkit";
 import { createSlice } from "@reduxjs/toolkit";
 import type { RootState } from "../../app/store";
 import { loginUser, restoreUser, updateProfile } from "./authThunks";
-
-export interface User {
-  id: string;
-  username: string;
-  name: string;
-  avatar?: string;
-  joined_display?: string;
-}
-
+import type { User } from "../users/types";
 interface AuthState {
   user: User | null;
   token: string | null;
