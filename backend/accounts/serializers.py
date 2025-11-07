@@ -46,10 +46,20 @@ class UserProfileSerializer(serializers.ModelSerializer):
     joined_display = serializers.SerializerMethodField()
     password = serializers.CharField(write_only=True, required=False)
     confirm_password = serializers.CharField(write_only=True, required=False)
+    is_following = serializers.BooleanField(read_only=True)
 
     class Meta:
         model = User
-        fields = ['id', 'username', 'name', 'avatar', 'joined_display', 'password', 'confirm_password']
+        fields = [
+            'id',
+            'username',
+            'name',
+            'avatar',
+            'joined_display',
+            'password',
+            'confirm_password',
+            'is_following',
+        ]
 
     def get_joined_display(self, obj):
         return obj.date_joined.strftime("%d/%m/%Y")
