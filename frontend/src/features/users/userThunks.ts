@@ -15,7 +15,7 @@ export const toggleFollow = createAsyncThunk<
   { userId: number; isFollowing: boolean },
   number
 >("users/toggleFollow", async (userId) => {
-  const response = await api.post(`/follow/${userId}/`);
+  const response = await api.post(`/follow/${userId}/toggle/`);
   const isFollowing = response.data.message === "Você começou a seguir.";
   return { userId, isFollowing };
 });
