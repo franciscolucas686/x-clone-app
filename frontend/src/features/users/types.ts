@@ -5,6 +5,8 @@ export interface User {
   avatar: string;
   joined_display?: string;
   is_following?: boolean;
+  following_count?: number;
+  followers_count?: number;
 }
 
 export interface UsersState {
@@ -12,4 +14,5 @@ export interface UsersState {
   loading: boolean;
   loadingFollowIds: number[];
   error: string | null;
+  selectedUser: User | null;
 }
