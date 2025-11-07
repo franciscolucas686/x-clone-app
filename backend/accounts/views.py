@@ -1,6 +1,9 @@
 from rest_framework import generics, permissions, parsers
 from .models import User
 from .serializers import RegisterSerializer, UserProfileSerializer
+from django.db.models import Exists, OuterRef
+from followers.models import Follow
+
 class RegisterView(generics.CreateAPIView):
     queryset = User.objects.all()
     serializer_class = RegisterSerializer
@@ -21,3 +24,20 @@ class ProfileView(generics.RetrieveUpdateAPIView):
         Permite atualização parcial de perfil (incluindo senha e avatar).
         """
         return self.partial_update(request, *args, **kwargs)
+
+class UserListView(generics.ListAPIView):
+    serializer_class = UserProfileSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        user = self.request.user
+
+        return (
+            User.objects
+            .exclude(id=user.id)
+            .annotate(
+                is_following=Exists(
+                    Follow.objects.filter(follower=user, following=OuterRef('id'))
+                )
+            )
+        )
