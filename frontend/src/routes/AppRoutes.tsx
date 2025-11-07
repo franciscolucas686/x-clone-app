@@ -11,6 +11,7 @@ import NotificationsPage from "../pages/NotificationsPage";
 import Profile from "../pages/ProfilePage";
 import PrivateRoute from "./PrivateRoute";
 import PublicRoute from "./PublicRoute";
+import ExplorerPage from "../pages/ExplorerPage";
 
 export function AppRoutes() {
   const dispatch = useAppDispatch();
@@ -33,6 +34,8 @@ export function AppRoutes() {
             <Route path="/profile" element={<Profile />} />
             <Route path="/messages" element={<MessagePage />} />
             <Route path="/notifications" element={<NotificationsPage />} />
+            <Route path="/explorer" element={<ExplorerPage />} />
+
           </Route>
         </Route>
       </Routes>
