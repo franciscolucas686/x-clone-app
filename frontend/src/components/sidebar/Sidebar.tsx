@@ -8,7 +8,7 @@ import UserCard from "./UserCard";
 
 const navItems = [
   { icon: Home, label: "Página inicial", path: "/feed" },
-  { icon: Search, label: "Explorar", path: "#" },
+  { icon: Search, label: "Explorar", path: "/explorer" },
   { icon: Bell, label: "Notificações", path: "/notifications" },
   { icon: Mail, label: "Mensagens", path: "/messages" },
   { icon: User, label: "Perfil", path: "/profile" },
