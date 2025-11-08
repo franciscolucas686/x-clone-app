@@ -18,11 +18,15 @@ class ProfileView(generics.RetrieveUpdateAPIView):
 
     def get_object(self):
         return self.request.user
+    
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        context["request"] = self.request
+        return context
+
 
     def patch(self, request, *args, **kwargs):
-        """
-        Permite atualização parcial de perfil (incluindo senha e avatar).
-        """
+        
         return self.partial_update(request, *args, **kwargs)
 
 class UserListView(generics.ListAPIView):
@@ -41,3 +45,8 @@ class UserListView(generics.ListAPIView):
                 )
             )
         )
+    
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        context["request"] = self.request
+        return context

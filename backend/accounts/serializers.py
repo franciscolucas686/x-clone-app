@@ -47,6 +47,8 @@ class UserProfileSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True, required=False)
     confirm_password = serializers.CharField(write_only=True, required=False)
     is_following = serializers.BooleanField(read_only=True)
+    followers_count = serializers.SerializerMethodField()
+    following_count = serializers.SerializerMethodField()
 
     class Meta:
         model = User
@@ -58,13 +60,29 @@ class UserProfileSerializer(serializers.ModelSerializer):
             'joined_display',
             'password',
             'confirm_password',
+            'is_following',
             'followers_count',
             'following_count',
-            'is_following',
         ]
 
     def get_joined_display(self, obj):
         return obj.date_joined.strftime("%d/%m/%Y")
+    
+    def get_is_following(self, obj):
+        request = self.context.get("request")
+        if request and request.user.is_authenticated:
+            from followers.models import Follow 
+            return Follow.objects.filter(follower=request.user, following=obj).exists()
+        return False
+
+    def get_followers_count(self, obj):
+        from followers.models import Follow
+        return Follow.objects.filter(following=obj).count()
+
+    def get_following_count(self, obj):
+        from followers.models import Follow
+        return Follow.objects.filter(follower=obj).count()
+
 
     def validate(self, data):
         password = data.get('password')

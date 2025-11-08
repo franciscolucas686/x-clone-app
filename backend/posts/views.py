@@ -5,12 +5,28 @@ from .models import Post, Like, Comment
 from .serializers import PostSerializer, CommentSerializer
 
 class PostListCreateView(generics.ListCreateAPIView):
-    queryset = Post.objects.all().order_by('-created_at')
     serializer_class = PostSerializer
     permission_classes = [permissions.IsAuthenticated]
 
+    def get_queryset(self):
+        return (
+            Post.objects
+            .select_related('user')
+            .prefetch_related(
+                'likes',                   
+                'comments',                
+                'comments__user'            
+            )
+            .order_by('-created_at')        
+        )
+
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
+
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        context["request"] = self.request
+        return context
 
 class LikePostView(APIView):
     permission_classes = [permissions.IsAuthenticated]
@@ -32,3 +48,8 @@ class CommentPostView(generics.CreateAPIView):
         post_id = self.kwargs.get('pk')
         post = Post.objects.get(pk=post_id)
         serializer.save(user=self.request.user, post=post)
+    
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        context["request"] = self.request
+        return context
