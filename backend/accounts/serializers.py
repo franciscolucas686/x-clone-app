@@ -58,6 +58,8 @@ class UserProfileSerializer(serializers.ModelSerializer):
             'joined_display',
             'password',
             'confirm_password',
+            'followers_count',
+            'following_count',
             'is_following',
         ]
 
