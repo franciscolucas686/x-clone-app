@@ -23,7 +23,7 @@ export default function FollowButton({ userId, isFollowing }: FollowButtonProps)
     <button
       onClick={handleClick}
       disabled={isLoading}
-      className={`px-4 py-1.5 rounded-full text-sm font-medium transition ${
+      className={`px-4 py-1.5 rounded-full text-sm font-medium transition cursor-pointer ${
         isFollowing
           ? "bg-gray-200 text-gray-700 hover:bg-gray-300"
           : "bg-blue-500 text-white hover:bg-blue-600"

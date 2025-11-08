@@ -1,14 +1,14 @@
-// src/features/users/usersSlice.ts
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { createSlice } from "@reduxjs/toolkit";
 import type { User, UsersState } from "./types";
-import { fetchUsers, toggleFollow } from "./userThunks";
+import { fetchUserByUsername, fetchUsers, toggleFollow } from "./userThunks";
 
 const initialState: UsersState = {
   list: [],
   loading: false,
   loadingFollowIds: [],
   error: null,
+  selectedUser: null,
 };
 
 const usersSlice = createSlice({
@@ -18,6 +18,17 @@ const usersSlice = createSlice({
   extraReducers: (builder) => {
     builder
 
+      .addCase(fetchUserByUsername.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(fetchUserByUsername.fulfilled, (state, action) => {
+        state.loading = false;
+        state.selectedUser = action.payload;
+      })
+      .addCase(fetchUserByUsername.rejected, (state) => {
+        state.loading = false;
+        state.selectedUser = null;
+      })
       .addCase(fetchUsers.pending, (state) => {
         state.loading = true;
       })
@@ -29,7 +40,6 @@ const usersSlice = createSlice({
         state.error = action.error.message ?? "Erro ao buscar usuários";
         state.loading = false;
       })
-
       .addCase(toggleFollow.pending, (state, action) => {
         state.loadingFollowIds.push(action.meta.arg);
       })
