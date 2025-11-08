@@ -4,6 +4,8 @@ export interface User {
   name: string;
   avatar: string;
   joined_display?: string;
+  followers_count?: number;
+  following_count?: number;
   is_following?: boolean;
   following_count?: number;
   followers_count?: number;
