@@ -41,11 +41,7 @@ export default function ExplorerPage() {
           <p>Carregando...</p>
         ) : (
           filteredUsers.map((user) => (
-            <Link
-              to={`/user/${user.username}`}
-              key={user.id}
-              className="flex items-center justify-between p-3 border border-gray-200 rounded-xl hover:bg-gray-50 transition"
-            >
+            <div className="flex items-center justify-between p-3 border border-gray-200 rounded-xl hover:bg-gray-50 transition">
               <div className="flex items-center gap-3">
                 <img
                   src={user.avatar}
@@ -53,8 +49,20 @@ export default function ExplorerPage() {
                   className="w-10 h-10 rounded-full object-cover"
                 />
                 <div>
-                  <p className="font-semibold text-gray-800">{user.name}</p>
-                  <p className="text-gray-500 text-sm">@{user.username}</p>
+                  <Link
+                    to={`/user/${user.username}`}
+                    key={user.id}
+                    className="font-semibold text-gray-800 flex"
+                  >
+                    {user.name}
+                  </Link>
+                  <Link
+                    to={`/user/${user.username}`}
+                    key={user.id}
+                    className="text-gray-500 text-sm"
+                  >
+                    @{user.username}
+                  </Link>
                 </div>
               </div>
 
@@ -62,7 +70,7 @@ export default function ExplorerPage() {
                 userId={user.id}
                 isFollowing={user.is_following ?? false}
               />
-            </Link>
+            </div>
           ))
         )}
       </div>
