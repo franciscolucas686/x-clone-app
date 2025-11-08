@@ -49,10 +49,10 @@ export default function Profile() {
 
           <div className="flex space-x-4 mt-2">
             <span className="cursor-default">
-              <strong>4</strong> Seguindo
+              <strong>{user.following_count }</strong> Seguindo
             </span>
             <span className="cursor-default">
-              <strong>0</strong> Seguidores
+              <strong>{user.followers_count }</strong> Seguidores
             </span>
           </div>
         </div>
