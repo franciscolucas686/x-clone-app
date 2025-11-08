@@ -1,5 +1,6 @@
 import { Search } from "lucide-react";
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import FollowButton from "../components/button/FollowButton";
 import { fetchUsers } from "../features/users/userThunks";
 import { useAppDispatch, useAppSelector } from "../hooks/useAppSelector";
@@ -40,7 +41,8 @@ export default function ExplorerPage() {
           <p>Carregando...</p>
         ) : (
           filteredUsers.map((user) => (
-            <div
+            <Link
+              to={`/user/${user.username}`}
               key={user.id}
               className="flex items-center justify-between p-3 border border-gray-200 rounded-xl hover:bg-gray-50 transition"
             >
@@ -56,8 +58,11 @@ export default function ExplorerPage() {
                 </div>
               </div>
 
-              <FollowButton userId={user.id} isFollowing={user.is_following} />
-            </div>
+              <FollowButton
+                userId={user.id}
+                isFollowing={user.is_following ?? false}
+              />
+            </Link>
           ))
         )}
       </div>
