@@ -1,15 +1,29 @@
 import { ArrowLeft } from "lucide-react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { ModalRoot } from "../components/modal/ModalRoot";
 import { openModal } from "../features/modal/modalSlice";
 import { useAppDispatch, useAppSelector } from "../hooks/useAppSelector";
 import { formatJoinedDate } from "../utils/date";
+import { Spinner } from "../components/spinner/Spinner";
 
 export default function Profile() {
   const dispatch = useAppDispatch();
   const { user } = useAppSelector((state) => state.auth);
+  const [localLoading, setLocalLoading] = useState(true);
 
-  if (!user) return null;
+  useEffect(() => {
+    const timer = setTimeout(() => setLocalLoading(false), 1000);
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (localLoading) {
+    return (
+      <div className="flex items-center justify-center h-[60vh]">
+        <Spinner />
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col">
@@ -20,7 +34,7 @@ export default function Profile() {
           </div>
         </Link>
         <div className="ml-4">
-          <h2 className="text-xl font-bold cursor-default">{user.name}</h2>
+          <h2 className="text-xl font-bold cursor-default">{user?.name}</h2>
           <p className="text-gray-500 text-sm cursor-default">
             <span>0</span> posts
           </p>
@@ -31,8 +45,8 @@ export default function Profile() {
         <div className="h-40 bg-gray-300" />
         <div className="flex items-end px-4 -mt-16">
           <img
-            src={user.avatar}
-            alt={user.name}
+            src={user?.avatar}
+            alt={user?.name}
             className="w-32 h-32 object-cover rounded-full border-4 border-white"
           />
         </div>
@@ -40,19 +54,19 @@ export default function Profile() {
 
       <div className="mt-6 px-4 flex justify-between items-start">
         <div>
-          <h2 className="text-xl font-bold cursor-default">{user.name}</h2>
-          <p className="text-gray-500 cursor-default">@{user.username}</p>
+          <h2 className="text-xl font-bold cursor-default">{user?.name}</h2>
+          <p className="text-gray-500 cursor-default">@{user?.username}</p>
           <p className="text-gray-500 mt-2 cursor-default">
             Ingressou em{" "}
-            {user.joined_display ? formatJoinedDate(user.joined_display) : ""}
+            {user?.joined_display ? formatJoinedDate(user?.joined_display) : ""}
           </p>
 
           <div className="flex space-x-4 mt-2">
             <span className="cursor-default">
-              <strong>{user.following_count }</strong> Seguindo
+              <strong>{user?.following_count}</strong> Seguindo
             </span>
             <span className="cursor-default">
-              <strong>{user.followers_count }</strong> Seguidores
+              <strong>{user?.followers_count}</strong> Seguidores
             </span>
           </div>
         </div>
