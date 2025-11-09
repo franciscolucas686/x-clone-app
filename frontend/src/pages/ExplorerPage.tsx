@@ -2,6 +2,7 @@ import { Search } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import FollowButton from "../components/button/FollowButton";
+import { Spinner } from "../components/spinner/Spinner";
 import { fetchUsers } from "../features/users/userThunks";
 import { useAppDispatch, useAppSelector } from "../hooks/useAppSelector";
 
@@ -9,9 +10,19 @@ export default function ExplorerPage() {
   const dispatch = useAppDispatch();
   const { list: users, loading } = useAppSelector((state) => state.users);
   const [search, setSearch] = useState("");
+  const [localLoading, setLocalLoading] = useState(true);
 
   useEffect(() => {
     dispatch(fetchUsers());
+  }, [dispatch]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      dispatch(fetchUsers());
+      setLocalLoading(false);
+    }, 500);
+
+    return () => clearTimeout(timer);
   }, [dispatch]);
 
   const filteredUsers = users.filter(
@@ -37,12 +48,13 @@ export default function ExplorerPage() {
       </div>
 
       <div className="space-y-3">
-        {loading ? (
-          <p>Carregando...</p>
+        {loading || localLoading ? (
+          <div className="flex items-center justify-center h-[60vh]">
+            <Spinner size={40} color="border-t-blue-500"  />
+          </div>
         ) : (
           filteredUsers.map((user) => (
-            <Link
-              to={`/user/${user.username}`}
+            <div
               key={user.id}
               className="flex items-center justify-between p-3 border border-gray-200 rounded-xl hover:bg-gray-50 transition"
             >
@@ -53,8 +65,18 @@ export default function ExplorerPage() {
                   className="w-10 h-10 rounded-full object-cover"
                 />
                 <div>
-                  <p className="font-semibold text-gray-800">{user.name}</p>
-                  <p className="text-gray-500 text-sm">@{user.username}</p>
+                  <Link
+                    to={`/user/${user.username}`}
+                    className="font-semibold text-gray-800 flex"
+                  >
+                    {user.name}
+                  </Link>
+                  <Link
+                    to={`/user/${user.username}`}
+                    className="text-gray-500 text-sm"
+                  >
+                    @{user.username}
+                  </Link>
                 </div>
               </div>
 
@@ -62,7 +84,7 @@ export default function ExplorerPage() {
                 userId={user.id}
                 isFollowing={user.is_following ?? false}
               />
-            </Link>
+            </div>
           ))
         )}
       </div>

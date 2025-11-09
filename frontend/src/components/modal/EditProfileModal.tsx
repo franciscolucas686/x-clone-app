@@ -1,6 +1,6 @@
 import { Camera } from "lucide-react";
 import { useEffect, useState } from "react";
-import { clearError } from "../../features/auth/authSlice";
+import { clearError, setError } from "../../features/auth/authSlice";
 import { updateProfile } from "../../features/auth/authThunks";
 import { closeModal } from "../../features/modal/modalSlice";
 import { useAppDispatch, useAppSelector } from "../../hooks/useAppSelector";
@@ -51,7 +51,14 @@ export default function EditProfileModal() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (form.password && form.password !== form.confirm_password) return;
+    if (form.password && form.password !== form.confirm_password) {
+      dispatch(clearError());
+
+      if (form.password && form.password !== form.confirm_password) {
+    dispatch(setError("As senhas não coincidem."));
+    return;
+  }
+    }
 
     const result = await dispatch(updateProfile(form));
     if (updateProfile.fulfilled.match(result)) {
@@ -119,7 +126,7 @@ export default function EditProfileModal() {
         </div>
 
         <div>
-          <label className="block text-gray-700">Senha</label>
+          <label className="block text-gray-700">Nova Senha</label>
           <input
             type="password"
             value={form.password}
@@ -129,7 +136,7 @@ export default function EditProfileModal() {
         </div>
 
         <div>
-          <label className="block text-gray-700">Confirmar senha</label>
+          <label className="block text-gray-700">Confirmar Nova Senha</label>
           <input
             type="password"
             value={form.confirm_password}

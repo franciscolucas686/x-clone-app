@@ -3,6 +3,7 @@ import { createSlice } from "@reduxjs/toolkit";
 import type { RootState } from "../../app/store";
 import { loginUser, restoreUser, updateProfile } from "./authThunks";
 import type { User } from "../users/types";
+import {fetchUserByUsername} from "../users/userThunks";
 interface AuthState {
   user: User | null;
   token: string | null;
@@ -23,6 +24,9 @@ const authSlice = createSlice({
   reducers: {
     clearError: (state) => {
       state.error = null;
+    },
+    setError: (state, action: PayloadAction<string>) => {
+      state.error = action.payload;
     },
     logout: (state) => {
       state.user = null;
@@ -67,12 +71,17 @@ const authSlice = createSlice({
       })
       .addCase(updateProfile.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload ?? "Erro ao atualizar perfil.";
+        state.error = action.payload as string;
+      })
+      .addCase(fetchUserByUsername.fulfilled, (state, action) => {
+        if (state.user && state.user.username === action.payload.username) {
+          state.user = action.payload;
+        }
       });
   },
 });
 
-export const { clearError, logout } = authSlice.actions;
+export const { setError, clearError, logout } = authSlice.actions;
 export default authSlice.reducer;
 
 export const selectAuth = (state: RootState) => state.auth;
