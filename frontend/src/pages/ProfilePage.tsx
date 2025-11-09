@@ -13,14 +13,14 @@ export default function Profile() {
   const [localLoading, setLocalLoading] = useState(true);
 
   useEffect(() => {
-    const timer = setTimeout(() => setLocalLoading(false), 1000);
+    const timer = setTimeout(() => setLocalLoading(false), 500);
     return () => clearTimeout(timer);
   }, []);
 
   if (localLoading) {
     return (
       <div className="flex items-center justify-center h-[60vh]">
-        <Spinner />
+        <Spinner size={40} color="border-t-blue-500" />
       </div>
     );
   }

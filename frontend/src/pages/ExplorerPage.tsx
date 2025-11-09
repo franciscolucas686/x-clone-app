@@ -20,7 +20,7 @@ export default function ExplorerPage() {
     const timer = setTimeout(() => {
       dispatch(fetchUsers());
       setLocalLoading(false);
-    }, 1000);
+    }, 500);
 
     return () => clearTimeout(timer);
   }, [dispatch]);
@@ -50,7 +50,7 @@ export default function ExplorerPage() {
       <div className="space-y-3">
         {loading || localLoading ? (
           <div className="flex items-center justify-center h-[60vh]">
-            <Spinner />
+            <Spinner size={40} color="border-t-blue-500"  />
           </div>
         ) : (
           filteredUsers.map((user) => (
