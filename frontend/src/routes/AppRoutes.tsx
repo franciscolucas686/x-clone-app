@@ -33,7 +33,7 @@ export function AppRoutes() {
           <Route element={<AppLayout />}>
             <Route path="/feed" element={<Feed />} />
             <Route path="/profile" element={<Profile />} />
-            <Route path="/user/username" element={<PublicProfile />} />
+            <Route path="/user/:username" element={<PublicProfile />} />
             <Route path="/messages" element={<MessagePage />} />
             <Route path="/notifications" element={<NotificationsPage />} />
             <Route path="/explorer" element={<ExplorerPage />} />

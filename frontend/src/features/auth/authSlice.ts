@@ -3,6 +3,7 @@ import { createSlice } from "@reduxjs/toolkit";
 import type { RootState } from "../../app/store";
 import { loginUser, restoreUser, updateProfile } from "./authThunks";
 import type { User } from "../users/types";
+import {fetchUserByUsername} from "../users/userThunks";
 interface AuthState {
   user: User | null;
   token: string | null;
@@ -68,6 +69,11 @@ const authSlice = createSlice({
       .addCase(updateProfile.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload ?? "Erro ao atualizar perfil.";
+      })
+      .addCase(fetchUserByUsername.fulfilled, (state, action) => {
+        if (state.user && state.user.username === action.payload.username) {
+          state.user = action.payload;
+        }
       });
   },
 });
