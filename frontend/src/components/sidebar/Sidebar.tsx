@@ -5,6 +5,8 @@ import { Xlogo } from "../icons/Xlogo";
 import ButtonPostModal from "../modal/ButtonPostModal";
 import MoreMenu from "./MoreMenu";
 import UserCard from "./UserCard";
+import { useAppDispatch, useAppSelector } from "../../hooks/useAppSelector";
+import { fetchUserByUsername } from "../../features/users/userThunks";
 
 const navItems = [
   { icon: Home, label: "Página inicial", path: "/feed" },
@@ -16,6 +18,9 @@ const navItems = [
 ];
 
 export default function Sidebar() {
+  const dispatch = useAppDispatch();
+  const { user } = useAppSelector((state) => state.auth);
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [showMoreMenu, setShowMoreMenu] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -37,6 +42,12 @@ export default function Sidebar() {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [showMoreMenu]);
+
+  const handleProfileClick = async () => {
+    if (user?.username) {
+      await dispatch(fetchUserByUsername(user.username));
+    }
+  };
 
   return (
     <div className="sticky top-0 h-screen flex flex-col justify-between p-4">
@@ -61,6 +72,15 @@ export default function Sidebar() {
                   <MoreMenu onClose={() => setShowMoreMenu(false)} />
                 )}
               </div>
+            ) : label === "Perfil" ? (
+              <Link
+                key={label}
+                to={path}
+                onClick={handleProfileClick}
+                className="flex p-2 px-6 cursor-pointer rounded-full hover:bg-gray-200 items-center transition-colors duration-100 ease-in-out space-x-3 font-semibold "
+              >
+                <Icon size={30} className="mr-5" /> <span>{label}</span>
+              </Link>
             ) : (
               <Link
                 key={label}
