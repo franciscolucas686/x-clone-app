@@ -25,6 +25,9 @@ const authSlice = createSlice({
     clearError: (state) => {
       state.error = null;
     },
+    setError: (state, action: PayloadAction<string>) => {
+      state.error = action.payload;
+    },
     logout: (state) => {
       state.user = null;
       state.token = null;
@@ -68,7 +71,7 @@ const authSlice = createSlice({
       })
       .addCase(updateProfile.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload ?? "Erro ao atualizar perfil.";
+        state.error = action.payload as string;
       })
       .addCase(fetchUserByUsername.fulfilled, (state, action) => {
         if (state.user && state.user.username === action.payload.username) {
@@ -78,7 +81,7 @@ const authSlice = createSlice({
   },
 });
 
-export const { clearError, logout } = authSlice.actions;
+export const { setError, clearError, logout } = authSlice.actions;
 export default authSlice.reducer;
 
 export const selectAuth = (state: RootState) => state.auth;

@@ -1,4 +1,3 @@
-// authThunks.ts
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import api from "../../api/axios";
 import type { User } from "../users/types";
@@ -119,8 +118,13 @@ export const updateProfile = createAsyncThunk<
   try {
     const formData = new FormData();
     Object.entries(data).forEach(([key, value]) => {
-      if (value !== undefined && value !== null) {
-        formData.append(key, value instanceof File ? value : String(value));
+      if (
+        value !== undefined &&
+        value !== null &&
+        value !== "" &&
+        !(key == "confirm_password" && !data.password)
+      ) {
+        formData.append(key, value instanceof File ? value : value);
       }
     });
 
