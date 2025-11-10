@@ -27,6 +27,25 @@ class PostListCreateView(generics.ListCreateAPIView):
         context = super().get_serializer_context()
         context["request"] = self.request
         return context
+    
+class FollowingPostsView(generics.ListAPIView):
+    serializer_class = PostSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        following_users = self.request.user.following.all().values_list("following", flat=True)
+        return (
+            Post.objects
+            .filter(user__id__in=following_users)
+            .select_related("user")
+            .prefetch_related("likes", "comments", "comments__user")
+            .order_by("-created_at")
+        )
+
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        context["request"] = self.request
+        return context
 
 class LikePostView(APIView):
     permission_classes = [permissions.IsAuthenticated]
@@ -36,9 +55,15 @@ class LikePostView(APIView):
         like, created = Like.objects.get_or_create(user=request.user, post=post)
         if not created:
             like.delete()
-            return Response({'message': 'Descurtido'}, status=status.HTTP_200_OK)
-        return Response({'message': 'Curtido'}, status=status.HTTP_201_CREATED)
-    
+            message = 'Descurtido'
+        else:
+            message = 'Curtido'
+        
+        serializer = PostSerializer(post, context={'request': request})
+        return Response({
+            'message': message,
+            'post': serializer.data
+        }, status=status.HTTP_200_OK)
 class CommentPostView(generics.CreateAPIView):
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
