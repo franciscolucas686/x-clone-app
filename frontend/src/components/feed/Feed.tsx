@@ -1,14 +1,17 @@
-import { useEffect } from "react";
-import { useAppDispatch, useAppSelector } from "../../hooks/useAppSelector";
-import { fetchPosts } from "../../features/posts/postThunk";
-import CommentModal from "./CommentModal";
-import { useState } from "react";
-import type { Post } from "../../features/posts/types";
+import { useEffect, useState } from "react";
 import { Spinner } from "../../components/spinner/Spinner";
+import { fetchPosts } from "../../features/posts/postThunks";
+import type { Post } from "../../features/posts/types";
+import { useAppDispatch, useAppSelector } from "../../hooks/useAppSelector";
+import CommentModal from "./CommentModal";
 
 export default function Feed() {
   const dispatch = useAppDispatch();
-  const { items: posts, loading, error } = useAppSelector((state) => state.posts);
+  const {
+    items: posts,
+    loading,
+    error,
+  } = useAppSelector((state) => state.posts);
   const [selectedPost, setSelectedPost] = useState<Post | null>(null);
 
   useEffect(() => {
@@ -57,7 +60,10 @@ export default function Feed() {
       ))}
 
       {selectedPost && (
-        <CommentModal post={selectedPost} onClose={() => setSelectedPost(null)} />
+        <CommentModal
+          post={selectedPost}
+          onClose={() => setSelectedPost(null)}
+        />
       )}
     </div>
   );
