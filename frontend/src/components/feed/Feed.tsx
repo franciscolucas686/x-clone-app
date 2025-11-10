@@ -1,23 +1,31 @@
-import { useState } from "react";
+import { useEffect } from "react";
+import { useAppDispatch, useAppSelector } from "../../hooks/useAppSelector";
+import { fetchPosts } from "../../features/posts/postThunk";
 import CommentModal from "./CommentModal";
-import Post from "./Post";
+import { useState } from "react";
+import type { Post } from "../../features/posts/types";
+import { Spinner } from "../../components/spinner/Spinner";
 
 export default function Feed() {
-  const [posts] = useState(
-    Array.from({ length: 15 }).map((_, i) => ({
-      id: i,
-      user: `@roberto3474${i + 1}`,
-      content: `Esse é o post número ${i + 1}.`,
-      avatar: `https://i.pravatar.cc/150?img=${i + 1}`,
-    }))
-  );
+  const dispatch = useAppDispatch();
+  const { items: posts, loading, error } = useAppSelector((state) => state.posts);
+  const [selectedPost, setSelectedPost] = useState<Post | null>(null);
 
-  const [selectedPost, setSelectedPost] = useState<null | {
-    id: number;
-    user: string;
-    content: string;
-    avatar: string;
-  } | null>(null);
+  useEffect(() => {
+    dispatch(fetchPosts());
+  }, [dispatch]);
+
+  if (loading) {
+    return (
+      <div className="flex justify-center p-6">
+        <Spinner />
+      </div>
+    );
+  }
+
+  if (error) {
+    return <p className="text-red-500 text-center p-4">{error}</p>;
+  }
 
   return (
     <div>
@@ -41,18 +49,15 @@ export default function Feed() {
       {posts.map((post) => (
         <Post
           key={post.id}
-          user={post.user}
-          content={post.content}
-          avatar={post.avatar}
+          user={`@${post.user.username}`}
+          content={post.text}
+          avatar={post.user.avatar}
           onCommentClick={() => setSelectedPost(post)}
         />
       ))}
 
       {selectedPost && (
-        <CommentModal
-          post={selectedPost}
-          onClose={() => setSelectedPost(null)}
-        />
+        <CommentModal post={selectedPost} onClose={() => setSelectedPost(null)} />
       )}
     </div>
   );
