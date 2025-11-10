@@ -4,6 +4,7 @@ export interface Comment {
   id: number;
   user: User;
   text: string;
+  post: number;
   created_at: string;
 }
 
