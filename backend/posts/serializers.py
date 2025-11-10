@@ -4,10 +4,12 @@ from accounts.serializers import UserProfileSerializer
 
 class CommentSerializer(serializers.ModelSerializer):
     user = UserProfileSerializer(read_only=True)
+    post = serializers.PrimaryKeyRelatedField(read_only=True)
+
 
     class Meta:
         model = Comment
-        fields = ['id', 'user', 'text', 'created_at']
+        fields = ['id', 'user', 'post', 'text', 'created_at']
 
 class PostSerializer(serializers.ModelSerializer):
     user = UserProfileSerializer(read_only=True)
