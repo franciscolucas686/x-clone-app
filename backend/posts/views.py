@@ -1,4 +1,4 @@
-from rest_framework import generics, permissions, status
+from rest_framework import generics, permissions, status, viewsets
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from .models import Post, Like, Comment
@@ -46,6 +46,14 @@ class FollowingPostsView(generics.ListAPIView):
         context = super().get_serializer_context()
         context["request"] = self.request
         return context
+    
+class PostViewSet(viewsets.ModelViewSet):
+    queryset = Post.objects.all().order_by("-created_at")
+    serializer_class = PostSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
 
 class LikePostView(APIView):
     permission_classes = [permissions.IsAuthenticated]
@@ -64,6 +72,7 @@ class LikePostView(APIView):
             'message': message,
             'post': serializer.data
         }, status=status.HTTP_200_OK)
+
 class CommentPostView(generics.CreateAPIView):
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
