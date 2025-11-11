@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Spinner } from "../../components/spinner/Spinner";
-import { createPost, fetchPosts } from "../../features/posts/postThunks";
+import { createPost, fetchFollowingPosts } from "../../features/posts/postThunks";
 import { useAppDispatch, useAppSelector } from "../../hooks/useAppSelector";
 import CommentModal from "./CommentModal";
 import Post from "./Post";
@@ -14,7 +14,7 @@ export default function Feed() {
   const [creating, setCreating] = useState(false);
 
   useEffect(() => {
-    dispatch(fetchPosts());
+    dispatch(fetchFollowingPosts());
   }, [dispatch]);
 
   const handleCreatePost = async (e?: React.FormEvent) => {
@@ -25,6 +25,7 @@ export default function Feed() {
     try {
       await dispatch(createPost({ text })).unwrap();
       setNewPostText("");
+      dispatch(fetchFollowingPosts());
     } catch (err) {
       console.error("Erro ao criar post:", err);
     } finally {
