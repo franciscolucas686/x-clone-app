@@ -3,6 +3,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from .models import Post, Like, Comment
 from .serializers import PostSerializer, CommentSerializer
+from django.db.models import Q
 
 class PostListCreateView(generics.ListCreateAPIView):
     serializer_class = PostSerializer
@@ -33,10 +34,11 @@ class FollowingPostsView(generics.ListAPIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
+        user = self.request.user
         following_users = self.request.user.following.all().values_list("following", flat=True)
         return (
             Post.objects
-            .filter(user__id__in=following_users)
+            .filter(Q(user__id__in=following_users) | Q(user=user))
             .select_related("user")
             .prefetch_related("likes", "comments", "comments__user")
             .order_by("-created_at")
