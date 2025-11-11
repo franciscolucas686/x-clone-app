@@ -45,7 +45,7 @@ export default function CommentModal({ postId, onClose }: Props) {
 
   return (
     <ModalLayout onClose={onClose} className="max-w-[600px]">
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-4 p-4">
         <div className="flex items-start gap-3">
           <img
             src={post.user.avatar || "/images/default-avatar.png"}
@@ -78,7 +78,7 @@ export default function CommentModal({ postId, onClose }: Props) {
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="mt-3 flex gap-3">
+        <form onSubmit={handleSubmit} className="mt-3 flex flex-col gap-3">
           <textarea
             value={text}
             onChange={(e) => setText(e.target.value)}
@@ -87,10 +87,10 @@ export default function CommentModal({ postId, onClose }: Props) {
             className="flex-1 p-2 border border-gray-300 rounded resize-none"
             disabled={submitting}
           />
-          <div className="flex flex-col">
+          <div className="flex flex-col items-end">
             <button
               type="submit"
-              className="btn bg-black text-white px-4 py-2 rounded disabled:opacity-50"
+              className="btn bg-black text-white px-4 py-2 mt-3 rounded disabled:opacity-50"
               disabled={submitting}
             >
               {submitting ? <Spinner /> : "Comentar"}
