@@ -1,75 +1,104 @@
 import { useState } from "react";
+import { Spinner } from "../../components/spinner/Spinner";
+import { createComment } from "../../features/posts/postThunks";
+import { useAppDispatch, useAppSelector } from "../../hooks/useAppSelector";
 import ModalLayout from "../modal/ModalLayout";
 
-interface CommentModalProps {
+type Props = {
+  postId: number;
   onClose: () => void;
-  post: {
-    id: number;
-    user: string;
-    content: string;
-    avatar: string;
-  };
-}
+};
 
-export default function CommentModal({ onClose, post }: CommentModalProps) {
-  const [comment, setComment] = useState("");
-  const [comments, setComments] = useState<string[]>([]);
+export default function CommentModal({ postId, onClose }: Props) {
+  const dispatch = useAppDispatch();
+  const post =
+    useAppSelector((s) => s.posts.items.find((p) => p.id === postId)) ?? null;
+  const [text, setText] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+  const [localError, setLocalError] = useState<string | null>(null);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  if (!post) return null;
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    const trimmed = text.trim();
+    if (!trimmed) {
+      setLocalError("Comentário vazio");
+      return;
+    }
 
-    if (!comment.trim()) return;
+    setLocalError(null);
+    setSubmitting(true);
 
-    setComments((prev) => [...prev, comment.trim()]);
-    setComment("");
+    try {
+      await dispatch(
+        createComment({ postId: post.id, text: trimmed })
+      ).unwrap();
+      setText("");
+    } catch (err) {
+      console.error("Erro ao enviar comentário:", err);
+      setLocalError("Erro ao enviar comentário");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
-    <ModalLayout onClose={onClose} className="max-w-[500px]">
-      <div className="flex flex-col gap-4 p-2">
-        <div className="flex items-center space-x-2 min-w-0 pb-4">
+    <ModalLayout onClose={onClose} className="max-w-[600px]">
+      <div className="flex flex-col gap-4">
+        <div className="flex items-start gap-3">
           <img
-            src={post.avatar}
-            alt="Francisco Lucas"
-            className="max-w-full h-auto w-12 rounded-full flex-shrink-0"
+            src={post.user.avatar || "/images/default-avatar.png"}
+            alt={post.user.name ?? post.user.username}
+            className="w-12 h-12 rounded-full object-cover"
           />
-          <div className="pb-4">
-            <h3 className="font-bold cursor-pointer">{post.user}</h3>
-            <p className="text-gray-700 whitespace-normal cursor-default">
-              {post.content}
-            </p>
+          <div>
+            <h3 className="font-bold">@{post.user.username}</h3>
+            <p className="text-gray-700">{post.text}</p>
           </div>
         </div>
 
-        {comments.length > 0 && (
-          <div className="mt-4 border-t border-gray-200 pt-3">
-            <h4 className="font-semibold mb-2 text-gray-700">Comentários</h4>
-
-            <div className="max-h-48 overflow-y-auto flex flex-col gap-2 pr-1">
-              {comments.map((c, index) => (
-                <div
-                  key={index}
-                  className="bg-gray-100 p-2 rounded text-gray-800 whitespace-pre-wrap"
-                >
-                  {c}
+        {post.comments.length > 0 && (
+          <div className="mt-2 border-t border-gray-200 pt-3 max-h-64 overflow-y-auto flex flex-col gap-2">
+            {post.comments.map((c) => (
+              <div key={c.id} className="flex items-start gap-3">
+                <img
+                  src={c.user.avatar || "/images/default-avatar.png"}
+                  alt={c.user.name ?? c.user.username}
+                  className="w-8 h-8 rounded-full object-cover"
+                />
+                <div className="bg-gray-100 p-2 rounded w-full">
+                  <div className="text-sm font-semibold">
+                    @{c.user.username}
+                  </div>
+                  <div className="text-sm whitespace-pre-wrap">{c.text}</div>
                 </div>
-              ))}
-            </div>
+              </div>
+            ))}
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="flex flex-fol gap-3">
+        <form onSubmit={handleSubmit} className="mt-3 flex gap-3">
           <textarea
-            value={comment}
-            onChange={(e) => setComment(e.target.value)}
-            placeholder="Escreva sua resposta..."
-            className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring focus:ring-blue-300 resize-none"
+            value={text}
+            onChange={(e) => setText(e.target.value)}
             rows={3}
+            placeholder="Escreva seu comentário..."
+            className="flex-1 p-2 border border-gray-300 rounded resize-none"
+            disabled={submitting}
           />
-
-          <button type="submit" className="btn rounded-none self-end mb-2">
-            Comentar
-          </button>
+          <div className="flex flex-col">
+            <button
+              type="submit"
+              className="btn bg-black text-white px-4 py-2 rounded disabled:opacity-50"
+              disabled={submitting}
+            >
+              {submitting ? <Spinner /> : "Comentar"}
+            </button>
+            {localError && (
+              <span className="text-red-500 text-xs mt-1">{localError}</span>
+            )}
+          </div>
         </form>
       </div>
     </ModalLayout>

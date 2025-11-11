@@ -1,68 +1,88 @@
 import { useEffect, useState } from "react";
 import { Spinner } from "../../components/spinner/Spinner";
-import { fetchPosts } from "../../features/posts/postThunks";
-import type { Post } from "../../features/posts/types";
+import { createPost, fetchPosts } from "../../features/posts/postThunks";
 import { useAppDispatch, useAppSelector } from "../../hooks/useAppSelector";
 import CommentModal from "./CommentModal";
+import Post from "./Post";
 
 export default function Feed() {
   const dispatch = useAppDispatch();
-  const {
-    items: posts,
-    loading,
-    error,
-  } = useAppSelector((state) => state.posts);
-  const [selectedPost, setSelectedPost] = useState<Post | null>(null);
+  const { items: posts, loading, error } = useAppSelector((s) => s.posts);
+  const [selectedPostId, setSelectedPostId] = useState<number | null>(null);
+  const [newPostText, setNewPostText] = useState("");
+  const [creating, setCreating] = useState(false);
 
   useEffect(() => {
     dispatch(fetchPosts());
   }, [dispatch]);
 
-  if (loading) {
-    return (
-      <div className="flex justify-center p-6">
-        <Spinner />
-      </div>
-    );
-  }
-
-  if (error) {
-    return <p className="text-red-500 text-center p-4">{error}</p>;
-  }
+  const handleCreatePost = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    const text = newPostText.trim();
+    if (!text) return;
+    setCreating(true);
+    try {
+      await dispatch(createPost({ text })).unwrap();
+      setNewPostText("");
+    } catch (err) {
+      console.error("Erro ao criar post:", err);
+    } finally {
+      setCreating(false);
+    }
+  };
 
   return (
     <div>
       <div className="p-4 border-b border-gray-200">
-        <div className="flex items-center space-x-2 min-w-0 pb-4">
-          <img
-            src="https://avatars.githubusercontent.com/u/15079328?v=4"
-            alt="Francisco Lucas"
-            className="max-w-full h-auto w-12 rounded-full flex-shrink-0"
-          />
-          <textarea
-            placeholder="O que está acontecendo?"
-            className="w-full resize-none p-5 ml-2 rounded-lg border border-gray-200 focus:outline-none"
-          />
-        </div>
-        <div className="flex justify-end">
-          <button className="btn px-4 py-2">Postar</button>
-        </div>
+        <form onSubmit={handleCreatePost}>
+          <div className="flex items-start space-x-2 min-w-0 pb-4">
+            <img
+              src="https://avatars.githubusercontent.com/u/15079328?v=4"
+              alt="Francisco Lucas"
+              className="max-w-full h-auto w-12 rounded-full flex-shrink-0"
+            />
+            <textarea
+              placeholder="O que está acontecendo?"
+              value={newPostText}
+              onChange={(e) => setNewPostText(e.target.value)}
+              className="w-full resize-none p-5 ml-2 rounded-lg border border-gray-200 focus:outline-none"
+              rows={3}
+              disabled={creating}
+            />
+          </div>
+
+          <div className="flex justify-end">
+            <button type="submit" className="btn px-4 py-2" disabled={creating}>
+              {creating ? "Publicando..." : "Publicar"}
+            </button>
+          </div>
+        </form>
       </div>
 
-      {posts.map((post) => (
+      {loading && (
+        <div className="flex justify-center py-6">
+          {typeof Spinner !== "undefined" ? (
+            <Spinner />
+          ) : (
+            <div>Carregando posts...</div>
+          )}
+        </div>
+      )}
+
+      {error && <p className="text-red-500 text-center py-4">{error}</p>}
+
+      {posts.map((p) => (
         <Post
-          key={post.id}
-          user={`@${post.user.username}`}
-          content={post.text}
-          avatar={post.user.avatar}
-          onCommentClick={() => setSelectedPost(post)}
+          key={p.id}
+          post={p}
+          onCommentClick={() => setSelectedPostId(p.id)}
         />
       ))}
 
-      {selectedPost && (
+      {selectedPostId != null && (
         <CommentModal
-          post={selectedPost}
-          onClose={() => setSelectedPost(null)}
+          postId={selectedPostId}
+          onClose={() => setSelectedPostId(null)}
         />
       )}
     </div>

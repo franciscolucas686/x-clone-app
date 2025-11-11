@@ -1,47 +1,61 @@
 import { Heart, MessageCircle } from "lucide-react";
+import { toggleLike } from "../../features/posts/postThunks";
+import type { Post as PostType } from "../../features/posts/types";
+import { useAppDispatch } from "../../hooks/useAppSelector";
 
-type PostProps = {
-  user: string;
-  content: string;
-  avatar: string;
+type Props = {
+  post: PostType;
   onCommentClick?: () => void;
 };
 
-export default function Post({
-  user,
-  content,
-  avatar,
-  onCommentClick,
-}: PostProps) {
+export default function Post({ post, onCommentClick }: Props) {
+  const dispatch = useAppDispatch();
+
+  const handleLike = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    dispatch(toggleLike({ postId: post.id }));
+  };
+
   return (
     <div className="px-4 py-2 border-b border-gray-200 hover:bg-gray-50 cursor-pointer">
-      <div className="flex items-center space-x-2 min-w-0 pb-4">
+      <div className="flex items-start space-x-3">
         <img
-          src={avatar}
-          alt={user}
-          className="max-w-full h-auto w-12 rounded-full flex-shrink-0"
+          src={post.user.avatar || "/images/default-avatar.png"}
+          alt={post.user.name ?? post.user.username}
+          className="w-12 h-12 rounded-full flex-shrink-0 object-cover"
         />
-        <div className="ml-2">
-          <h3 className="font-bold cursor-default">{user}</h3>
-          <p className="whitespace-normal cursor-default">{content}</p>
-          <div className="flex text-gray-500 text-sm max-w-md gap-10">
+        <div className="flex-1">
+          <div className="flex items-center justify-between">
+            <h3 className="font-bold cursor-default">@{post.user.username}</h3>
+            <span className="text-xs text-gray-400">
+              {new Date(post.created_at).toLocaleString()}
+            </span>
+          </div>
+
+          <p className="mt-1 whitespace-normal">{post.text}</p>
+
+          <div className="flex text-gray-500 text-sm gap-6 mt-3">
             <button
               onClick={(e) => {
                 e.stopPropagation();
                 onCommentClick?.();
               }}
-              className="flex items-center space-x-1 hover:text-blue-500 transition-colors cursor-pointer group"
+              className="flex items-center gap-2 hover:text-blue-500"
             >
-              <div className="p-2 rounded-full hover:bg-blue-100">
-                <MessageCircle size={18} />
-              </div>
-              <span>3 mil</span>
+              <MessageCircle size={18} />
+              <span>{post.comments_count}</span>
             </button>
-            <button className="flex items-center space-x-1 hover:text-red-500 transition-colors cursor-pointer group">
+
+            <button
+              onClick={handleLike}
+              className={`flex items-center gap-2 ${
+                post.is_liked ? "text-red-500" : "hover:text-red-500"
+              }`}
+            >
               <div className="p-2 rounded-full hover:bg-red-100">
                 <Heart size={18} />
               </div>
-              <span>15 mil</span>
+              <span>{post.likes_count}</span>
             </button>
           </div>
         </div>
