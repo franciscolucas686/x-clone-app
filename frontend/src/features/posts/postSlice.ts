@@ -3,96 +3,145 @@ import { createSlice } from "@reduxjs/toolkit";
 import {
   createComment,
   createPost,
+  fetchFollowingPosts,
   fetchPosts,
   toggleLike,
 } from "./postThunks";
-import type { Comment, Post } from "./types";
+import type { Post } from "./types";
 
-interface PostsState {
+interface PostState {
   items: Post[];
   loading: boolean;
+  creating: boolean;
+  commentingPostIds: number[];
+  likingPostIds: number[];
   error: string | null;
 }
 
-const initialState: PostsState = {
+const initialState: PostState = {
   items: [],
   loading: false,
   error: null,
+  creating: false,
+  likingPostIds: [],
+  commentingPostIds: [],
 };
 
-const postsSlice = createSlice({
+const postSlice = createSlice({
   name: "posts",
   initialState,
-  reducers: {
-    setPosts(state, action: PayloadAction<Post[]>) {
-      state.items = action.payload;
-    },
-  },
+  reducers: {},
   extraReducers: (builder) => {
-    builder.addCase(fetchPosts.pending, (state) => {
-      state.loading = true;
-      state.error = null;
-    });
-    builder.addCase(
-      fetchPosts.fulfilled,
-      (state, action: PayloadAction<Post[]>) => {
+    builder
+
+      // === Buscar posts (geral) ===
+      .addCase(fetchPosts.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchPosts.fulfilled, (state, action: PayloadAction<Post[]>) => {
         state.loading = false;
         state.items = action.payload;
-      }
-    );
-    builder.addCase(fetchPosts.rejected, (state, action) => {
-      state.loading = false;
-      state.error = action.payload as string;
-    });
-
-    builder.addCase(createPost.pending, (state) => {
-      state.loading = true;
-    });
-    builder.addCase(
-      createPost.fulfilled,
-      (state, action: PayloadAction<Post>) => {
+      })
+      .addCase(fetchPosts.rejected, (state, action) => {
         state.loading = false;
-        state.items.unshift(action.payload);
-      }
-    );
-    builder.addCase(createPost.rejected, (state, action) => {
-      state.loading = false;
-      state.error = action.payload as string;
-    });
+        state.error = action.error.message ?? "Erro ao buscar posts";
+      })
 
-    builder.addCase(
-      createComment.fulfilled,
-      (state, action: PayloadAction<Comment>) => {
-        const comment = action.payload;
-        const p = state.items.find((x) => x.id === comment.post);
-        if (p) {
-          p.comments = [...p.comments, comment];
-          p.comments_count = (p.comments_count ?? 0) + 1;
+      // === Buscar posts de quem o usuário segue ===
+      .addCase(fetchFollowingPosts.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(
+        fetchFollowingPosts.fulfilled,
+        (state, action: PayloadAction<Post[]>) => {
+          state.loading = false;
+          state.items = action.payload;
         }
-      }
-    );
-    builder.addCase(createComment.rejected, (state, action) => {
-      state.error = action.payload as string;
-    });
+      )
+      .addCase(fetchFollowingPosts.rejected, (state, action) => {
+        state.loading = false;
+        state.error =
+          action.error.message ?? "Erro ao buscar posts dos seguidos";
+      })
 
-    builder.addCase(toggleLike.fulfilled, (state, action) => {
-      const payload = action.payload;
-      const post = state.items.find((p) => p.id === payload.postId);
-      if (!post) return;
+      // === Criar post ===
+      .addCase(createPost.pending, (state) => {
+        state.creating = true;
+      })
+      .addCase(createPost.fulfilled, (state, action: PayloadAction<Post>) => {
+        state.creating = false;
+        state.items.unshift(action.payload);
+      })
+      .addCase(createPost.rejected, (state, action) => {
+        state.creating = false;
+        state.error = action.error.message ?? "Erro ao criar post";
+      })
 
-      if (payload.serverPost) {
-        post.likes_count = payload.serverPost.likes_count;
-        post.is_liked = payload.serverPost.is_liked;
-      } else {
-        post.is_liked = payload.is_liked;
-        post.likes_count = (post.likes_count ?? 0) + payload.likes_delta;
-      }
-    });
-    builder.addCase(toggleLike.rejected, (state, action) => {
-      state.error = action.payload as string;
-    });
+      // === Curtir/Descurtir post ===
+      .addCase(toggleLike.pending, (state, action) => {
+        state.likingPostIds.push(action.meta.arg.postId);
+      })
+      .addCase(
+        toggleLike.fulfilled,
+        (
+          state,
+          action: PayloadAction<{
+            postId: number;
+            is_liked: boolean;
+            likes_delta: number;
+            serverPost?: Post;
+          }>
+        ) => {
+          const { postId, is_liked, likes_delta, serverPost } = action.payload;
+
+          if (serverPost) {
+            const index = state.items.findIndex((p) => p.id === serverPost.id);
+            if (index !== -1) state.items[index] = serverPost;
+          } else {
+            const post = state.items.find((p) => p.id === postId);
+            if (post) {
+              post.is_liked = is_liked;
+              post.likes_count += likes_delta;
+            }
+          }
+
+          state.likingPostIds = state.likingPostIds.filter(
+            (id) => id !== postId
+          );
+        }
+      )
+      .addCase(toggleLike.rejected, (state, action) => {
+        state.likingPostIds = state.likingPostIds.filter(
+          (id) => id !== action.meta.arg.postId
+        );
+        state.error = action.payload ?? "Erro ao curtir post";
+      })
+
+      // === Criar comentário ===
+      .addCase(createComment.pending, (state, action) => {
+        state.commentingPostIds.push(action.meta.arg.postId);
+      })
+      .addCase(createComment.fulfilled, (state, action) => {
+        const newComment = action.payload;
+        state.commentingPostIds = state.commentingPostIds.filter(
+          (id) => id !== newComment.post
+        );
+        const post = state.items.find((p) => p.id === newComment.post);
+        if (post) {
+          post.comments.unshift(newComment);
+          post.comments_count += 1;
+        }
+      })
+      .addCase(createComment.rejected, (state, action) => {
+        state.loading = false;
+        state.error =
+          typeof action.payload === "string"
+            ? action.payload
+            : action.error.message ?? "Erro ao criar comentário";
+      });
   },
 });
 
-export const { setPosts } = postsSlice.actions;
-export default postsSlice.reducer;
+export default postSlice.reducer;

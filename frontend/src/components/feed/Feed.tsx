@@ -7,6 +7,7 @@ import Post from "./Post";
 
 export default function Feed() {
   const dispatch = useAppDispatch();
+  const { user } = useAppSelector((state) => state.auth);
   const { items: posts, loading, error } = useAppSelector((s) => s.posts);
   const [selectedPostId, setSelectedPostId] = useState<number | null>(null);
   const [newPostText, setNewPostText] = useState("");
@@ -35,11 +36,11 @@ export default function Feed() {
     <div>
       <div className="p-4 border-b border-gray-200">
         <form onSubmit={handleCreatePost}>
-          <div className="flex items-start space-x-2 min-w-0 pb-4">
+          <div className="flex items-start space-x-2 pb-4">
             <img
-              src="https://avatars.githubusercontent.com/u/15079328?v=4"
-              alt="Francisco Lucas"
-              className="max-w-full h-auto w-12 rounded-full flex-shrink-0"
+              src={user?.avatar}
+              alt={user?.name}
+              className="w-12 h-12 object-cover rounded-full flex-shrink-0"
             />
             <textarea
               placeholder="O que está acontecendo?"
@@ -70,6 +71,10 @@ export default function Feed() {
       )}
 
       {error && <p className="text-red-500 text-center py-4">{error}</p>}
+
+      {!loading && posts.length === 0 && (
+        <p className="text-center text-gray-500 py-6">Não há nenhum post</p>
+      )}
 
       {posts.map((p) => (
         <Post

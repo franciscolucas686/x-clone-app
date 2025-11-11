@@ -1,6 +1,7 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
+import axios, { AxiosError } from "axios";
 import api from "../../api/axios";
-import type { Comment, Post } from "./types";
+import type { PostComment, Post } from "./types";
 
 export const fetchPosts = createAsyncThunk<
   Post[],
@@ -8,10 +9,34 @@ export const fetchPosts = createAsyncThunk<
   { rejectValue: string }
 >("posts/fetchPosts", async (_, { rejectWithValue }) => {
   try {
-    const { data } = await api.get<Post[]>("/api/posts/");
+    const { data } = await api.get<Post[]>("/posts/");
     return data;
-  } catch (err) {
-    console.error("fetchPosts error:", err);
+  } catch (error: unknown) {
+    if (axios.isAxiosError(error)) {
+      if (error.response?.status === 404) {
+        return [] as Post[];
+      }
+    }
+
+    return rejectWithValue("Erro ao buscar posts");
+  }
+});
+
+export const fetchFollowingPosts = createAsyncThunk<
+  Post[],
+  void,
+  { rejectValue: string }
+>("posts/fetchFollowingPosts", async (_, { rejectWithValue }) => {
+  try {
+    const { data } = await api.get<Post[]>("/posts/following/");
+    return data;
+  } catch (error: unknown) {
+    if (axios.isAxiosError(error)) {
+      if (error.response?.status === 404) {
+        return [] as Post[];
+      }
+    }
+
     return rejectWithValue("Erro ao buscar posts");
   }
 });
@@ -22,7 +47,7 @@ export const createPost = createAsyncThunk<
   { rejectValue: string }
 >("posts/createPost", async ({ text }, { rejectWithValue }) => {
   try {
-    const { data } = await api.post<Post>("/api/posts/", { text });
+    const { data } = await api.post<Post>("/posts/", { text });
     return data;
   } catch (err) {
     console.error("createPost error:", err);
@@ -31,17 +56,18 @@ export const createPost = createAsyncThunk<
 });
 
 export const createComment = createAsyncThunk<
-  Comment,
+  PostComment,
   { postId: number; text: string },
   { rejectValue: string }
 >("posts/createComment", async ({ postId, text }, { rejectWithValue }) => {
   try {
-    const { data } = await api.post<Comment>(`/api/posts/${postId}/comment/`, {
+    const { data } = await api.post<PostComment>(`/posts/${postId}/comment/`, {
       text,
     });
     return data;
   } catch (err) {
-    console.error("createComment error:", err);
+    const error = err as AxiosError;
+    console.error("createComment error:", error.response?.data || error.message);
     return rejectWithValue("Erro ao enviar comentário");
   }
 });
@@ -52,7 +78,7 @@ export const toggleLike = createAsyncThunk<
   { rejectValue: string }
 >("posts/toggleLike", async ({ postId }, { rejectWithValue }) => {
   try {
-    const { data } = await api.post(`/api/posts/${postId}/like/`);
+    const { data } = await api.post(`/posts/${postId}/like/`);
 
     if (
       data &&
