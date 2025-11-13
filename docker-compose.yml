@@ -1,0 +1,39 @@
+services:
+  backend:
+    build:
+      context: ./backend
+    container_name: x_clone_backend
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - ./backend:/app
+    ports:
+      - "8000:8000"
+    env_file:
+      - ./backend/.env
+    depends_on:
+      - db
+    environment:
+      - DJANGO_SETTINGS_MODULE=backend.settings
+      - DEBUG=1
+      - DJANGO_SUPERUSER_USERNAME=francisco
+      - DJANGO_SUPERUSER_PASSWORD=377445577fT/
+      - DATABASE_NAME=xclone
+      - DATABASE_USER=postgres
+      - DATABASE_PASSWORD=postgres
+      - DATABASE_HOST=db
+      - DATABASE_PORT=5432
+    restart: always
+
+  db:
+    image: postgres:16
+    container_name: x_clone_db
+    environment:
+      POSTGRES_DB: x_clone
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: always
+
+volumes:
+  postgres_data:
