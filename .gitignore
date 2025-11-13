@@ -13,8 +13,11 @@ __pycache__/
 *.pyc
 *.pyo
 *.pyd
-db.sqlite3
+*.db
+*.egg-info/
+*.sqlite3
 db.sqlite3-journal
+
 media/
 staticfiles/
 local_settings.py
@@ -65,7 +68,9 @@ yarn-debug.log*
 yarn-error.log*
 
 # Environment files
+.env.dev
 .env.local
+.env.prod
 .env.development.local
 .env.test.local
 .env.production.local
@@ -95,3 +100,7 @@ ehthumbs.db
 *.swp
 *.swo
 *.tmp
+
+# Docker e banco de dados
+postgres_data/
+*.pid
