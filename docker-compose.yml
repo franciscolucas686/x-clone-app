@@ -3,9 +3,11 @@ services:
     build:
       context: ./backend
     container_name: x_clone_backend
-    command: python manage.py runserver 0.0.0.0:8000
+    command: ["python", "manage.py", "runserver", "0.0.0.0:8000"]
     volumes:
       - ./backend:/app
+      - ./backend/media:/app/media
+      - ./backend/media-seed:/app/media-seed
     ports:
       - "8000:8000"
     env_file:
