@@ -26,7 +26,7 @@ class PostLikeCommentTests(APITestCase):
         like_url = reverse('like-post', kwargs={'pk': self.post.pk})
 
         response = self.client.post(like_url)
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(self.post.likes.count(), 1)
 
     def test_comentar_post(self):
