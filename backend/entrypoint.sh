@@ -1,0 +1,56 @@
+#!/bin/sh
+set -e
+
+echo "🔍 Verificando se o banco de dados está disponível..."
+
+until nc -z db 5432; do
+  echo "⏳ Aguardando o banco de dados subir..."
+  sleep 5
+done
+
+echo "✅ Banco de dados disponível!"
+
+echo "🚀 Aplicando migrações..."
+python manage.py migrate --noinput
+
+echo "📂 Verificando diretórios de mídia..."
+mkdir -p /app/media /app/media-seed
+
+if [ ! -d "/app/media-seed/avatars" ]; then
+  echo "⚠️  Diretório /app/media-seed/avatars não encontrado!"
+  echo "   Certifique-se de que o volume media-seed está montado corretamente."
+else
+  echo "✅ Diretório /app/media-seed/avatars encontrado."
+fi
+
+if [ "$DJANGO_SUPERUSER_USERNAME" ] && [ "$DJANGO_SUPERUSER_PASSWORD" ]; then
+  echo "👑 Verificando superusuário..."
+  python manage.py shell << END
+from django.contrib.auth import get_user_model
+User = get_user_model()
+username = "${DJANGO_SUPERUSER_USERNAME}"
+if not User.objects.filter(username=username).exists():
+    User.objects.create_superuser(
+        username=username,
+        password="${DJANGO_SUPERUSER_PASSWORD}"
+    )
+    print("✅ Superusuário criado com sucesso.")
+else:
+    print("ℹ️  Superusuário já existe.")
+END
+fi
+
+echo "🌱 Executando seed_data.py e populando dados..."
+if python seed_data.py; then
+  echo "✅ Seed de dados executado com sucesso!"
+  
+  echo "🧹 Limpando diretório /app/media-seed..."
+  rm -rf /app/media-seed/* || echo "⚠️ Não foi possível limpar /app/media-seed (talvez não exista ou esteja vazio)"
+
+  echo "✅ Diretório /app/media-seed removido com sucesso."
+else
+  echo "⚠️  Falha ao executar seed_data.py. Diretório media-seed preservado para depuração."
+fi
+
+echo "✅ Setup completo! Iniciando servidor Django..."
+exec "$@"
