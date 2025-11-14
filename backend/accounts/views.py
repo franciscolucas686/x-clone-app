@@ -39,6 +39,8 @@ class UserListView(generics.ListAPIView):
         return (
             User.objects
             .exclude(id=user.id)
+            .exclude(is_superuser=True)          
+            .exclude(is_staff=True)       
             .annotate(
                 is_following=Exists(
                     Follow.objects.filter(follower=user, following=OuterRef('id'))
