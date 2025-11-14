@@ -17,7 +17,7 @@ services:
     environment:
       - DJANGO_SETTINGS_MODULE=backend.settings
       - DEBUG=1
-      - DJANGO_SUPERUSER_USERNAME=francisco
+      - DJANGO_SUPERUSER_USERNAME=admin
       - DJANGO_SUPERUSER_PASSWORD=377445577fT/
       - DATABASE_NAME=xclone
       - DATABASE_USER=postgres
