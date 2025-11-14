@@ -81,11 +81,17 @@ def create_posts(users):
     posts = []
 
     texts = [
-        "Lindo dia hoje para fazer um bom trabalho! 🚀",
-        "Hoje o café saiu mais forte que o código ☕",
-        "O amor move montanhas ❤️",
-        "Aprendendo sobre como melhorar meu inglês.",
-        "Caminhando no parque 🌞",
+        "A persistência é a chave para o sucesso. 🔑",
+        "Hora de colocar a playlist para tocar e começar a codar! 🎧💻",
+        "Um dia de cada vez, com foco e determinação. ✨",
+        "O sol da manhã recarrega as energias. ☀️🔋",
+        "Focando em novos projetos e desafios. 💡",
+        "A leitura abre portas para novos mundos. 📚🌍",
+        "Sextou com S de sucesso nos planos da semana. 🥳🗓️",
+        "Aproveitando o momento para respirar fundo e planejar. 🧘‍♀️",
+        "Metas claras, ações focadas, resultados garantidos. 🎯",
+        "Revisando o código e otimizando o sistema. 🔧",
+        "A criatividade está fluindo hoje! 🎨",
     ]
 
     for user in users:
