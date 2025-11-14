@@ -24,19 +24,30 @@ fi
 
 if [ "$DJANGO_SUPERUSER_USERNAME" ] && [ "$DJANGO_SUPERUSER_PASSWORD" ]; then
   echo "👑 Verificando superusuário..."
+
   python manage.py shell << END
 from django.contrib.auth import get_user_model
 User = get_user_model()
+
 username = "${DJANGO_SUPERUSER_USERNAME}"
+name = "${DJANGO_SUPERUSER_NAME}"
+
 if not User.objects.filter(username=username).exists():
-    User.objects.create_superuser(
+    u = User.objects.create_superuser(
         username=username,
         password="${DJANGO_SUPERUSER_PASSWORD}"
     )
-    print("✅ Superusuário criado com sucesso.")
+    u.name = name
+    u.save()
+    print("✅ Superusuário criado com sucesso com name.")
 else:
-    print("ℹ️  Superusuário já existe.")
+    print("ℹ️  Superusuário já existe. Atualizando name, se necessário...")
+    u = User.objects.get(username=username)
+    u.name = name
+    u.save()
+    print("🔄 Name atualizado.")
 END
+
 fi
 
 echo "🌱 Executando seed_data.py e populando dados..."
