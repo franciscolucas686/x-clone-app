@@ -12,18 +12,9 @@ export default function ExplorerPage() {
   const [search, setSearch] = useState("");
   const [localLoading, setLocalLoading] = useState(true);
 
-  useEffect(() => {
-    dispatch(fetchUsers());
-  }, [dispatch]);
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      dispatch(fetchUsers());
-      setLocalLoading(false);
-    }, 500);
-
-    return () => clearTimeout(timer);
-  }, [dispatch]);
+useEffect(() => {
+  dispatch(fetchUsers()).finally(() => setLocalLoading(false));
+}, [dispatch]);
 
   const filteredUsers = users.filter(
     (user) =>
