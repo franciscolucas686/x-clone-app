@@ -18,7 +18,6 @@ mkdir -p /app/media /app/media-seed
 
 if [ ! -d "/app/media-seed/avatars" ]; then
   echo "⚠️  Diretório /app/media-seed/avatars não encontrado!"
-  echo "   Certifique-se de que o volume media-seed está montado corretamente."
 else
   echo "✅ Diretório /app/media-seed/avatars encontrado."
 fi
@@ -41,16 +40,7 @@ END
 fi
 
 echo "🌱 Executando seed_data.py e populando dados..."
-if python seed_data.py; then
-  echo "✅ Seed de dados executado com sucesso!"
-  
-  echo "🧹 Limpando diretório /app/media-seed..."
-  rm -rf /app/media-seed/* || echo "⚠️ Não foi possível limpar /app/media-seed (talvez não exista ou esteja vazio)"
-
-  echo "✅ Diretório /app/media-seed removido com sucesso."
-else
-  echo "⚠️  Falha ao executar seed_data.py. Diretório media-seed preservado para depuração."
-fi
+python seed_data.py || echo "⚠️ Falha ao executar seed"
 
 echo "✅ Setup completo! Iniciando servidor Django..."
 exec "$@"
