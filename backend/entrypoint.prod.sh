@@ -3,13 +3,17 @@ set -e
 
 echo "🔍 Verificando se o banco de dados está disponível..."
 
-DB_HOST=${DATABASE_HOST:-db}
-DB_PORT=${DATABASE_PORT:-5432}
+DB_HOST="${PGHOST:-${DATABASE_HOST:-db}}"
+DB_PORT="${PGPORT:-${DATABASE_PORT:-5432}}"
+
+echo "Usando host: $DB_HOST"
+echo "Usando porta: $DB_PORT"
 
 until nc -z "$DB_HOST" "$DB_PORT"; do
   echo "⏳ Aguardando o banco de dados em $DB_HOST:$DB_PORT..."
   sleep 2
 done
+
 
 echo "✅ Banco de dados disponível!"
 
