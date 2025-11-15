@@ -3,6 +3,7 @@ services:
     build:
       context: ./backend
     container_name: x_clone_backend
+    entrypoint: ["/app/entrypoint.sh"]
     command: ["python", "manage.py", "runserver", "0.0.0.0:8000"]
     volumes:
       - ./backend:/app
@@ -14,26 +15,13 @@ services:
       - ./backend/.env
     depends_on:
       - db
-    environment:
-      - DJANGO_SETTINGS_MODULE=backend.settings
-      - DEBUG=1
-      - DJANGO_SUPERUSER_USERNAME=admin
-      - DJANGO_SUPERUSER_NAME=Administrador
-      - DJANGO_SUPERUSER_PASSWORD=377445577fT/
-      - DATABASE_NAME=xclone
-      - DATABASE_USER=postgres
-      - DATABASE_PASSWORD=postgres
-      - DATABASE_HOST=db
-      - DATABASE_PORT=5432
     restart: always
 
   db:
     image: postgres:16
     container_name: x_clone_db
-    environment:
-      POSTGRES_DB: x_clone
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+    env_file:
+      - ./backend/.env
     volumes:
       - postgres_data:/var/lib/postgresql/data
     restart: always
