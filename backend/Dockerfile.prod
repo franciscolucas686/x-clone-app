@@ -13,6 +13,8 @@ RUN apt-get update && \
 WORKDIR /app
 
 COPY requirements.txt .
+COPY seed_data.py /app/seed_data.py
+
 
 RUN pip install --upgrade pip \
     && pip install --no-cache-dir -r requirements.txt
