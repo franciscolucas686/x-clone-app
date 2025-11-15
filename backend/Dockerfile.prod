@@ -21,13 +21,13 @@ COPY . .
 
 RUN mkdir -p /app/media /app/static
 
-COPY ./entrypoint.sh /entrypoint.sh
+COPY ./entrypoint.prod.sh /entrypoint.prod.sh
 RUN chmod +x /entrypoint.sh
 
 ENV PORT 8000
 
 EXPOSE 8000
 
-ENTRYPOINT ["/entrypoint.sh"]
+ENTRYPOINT ["/entrypoint.prod.sh"]
 
 CMD ["gunicorn", "backend.wsgi:application", "--bind", "0.0.0.0:8000", "--workers", "3", "--log-level", "info"]
