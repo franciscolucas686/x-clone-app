@@ -2,7 +2,7 @@ import os
 import django
 import random
 
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "backend.settings")
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "backend.settings.production")
 django.setup()
 
 from django.contrib.auth import get_user_model
