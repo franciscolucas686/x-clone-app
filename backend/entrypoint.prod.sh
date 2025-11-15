@@ -20,28 +20,38 @@ mkdir -p /app/media
 
 if [ -n "${DJANGO_SUPERUSER_USERNAME:-}" ] && [ -n "${DJANGO_SUPERUSER_PASSWORD:-}" ]; then
   echo "👑 Verificando/Atualizando superusuário..."
-  python manage.py shell <<PY
+  python manage.py shell <<'PY'
 from django.contrib.auth import get_user_model
 User = get_user_model()
 username = "${DJANGO_SUPERUSER_USERNAME}"
 password = "${DJANGO_SUPERUSER_PASSWORD}"
 name = "${DJANGO_SUPERUSER_NAME:-Administrator}"
 
-user, created = User.objects.get_or_create(username=username, defaults={'email': email})
+user, created = User.objects.get_or_create(username=username)
 if created:
     user.is_superuser = True
     user.is_staff = True
     user.set_password(password)
     user.name = name
-    user.email = email
     user.save()
     print("✅ Superusuário criado com sucesso.")
 else:
-    user.name = name
-    if not user.has_usable_password():
+    updated = False
+
+    if user.first_name != name:
+        user.first_name = name
+        updated = True
+
+    if not user.check_password(password):
+        # Se quiser SEMPRE atualizar a senha:
         user.set_password(password)
-    user.save()
-    print("🔄 Superusuário já existia — atualizado name/password se necessário.")
+        updated = True
+
+    if updated:
+        user.save()
+        print("🔄 Superusuário existente — atualizado.")
+    else:
+        print("ℹ️ Superusuário já existe e está atualizado.")
 PY
 fi
 
