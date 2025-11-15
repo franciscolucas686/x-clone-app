@@ -22,7 +22,7 @@ COPY . .
 RUN mkdir -p /app/media /app/static
 
 COPY ./entrypoint.prod.sh /entrypoint.prod.sh
-RUN chmod +x /entrypoint.sh
+RUN chmod +x /entrypoint.prod.sh
 
 ENV PORT 8000
 
