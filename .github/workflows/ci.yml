@@ -9,16 +9,49 @@ jobs:
   ci:
     name: Run checks & tests
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_DB: xclone_test
+          POSTGRES_USER: xclone_user
+          POSTGRES_PASSWORD: xclone_pass
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U xclone_user" 
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      DATABASE_NAME: xclone_test
+      DATABASE_USER: xclone_user
+      DATABASE_PASSWORD: xclone_pass
+      DATABASE_HOST: localhost
+      DATABASE_PORT: 5432
+
     steps:
       - uses: actions/checkout@v4
+
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: "3.12"
+
       - name: Install dependencies
         run: |
           pip install --upgrade pip
           pip install -r backend/requirements.txt
+
+      - name: Wait for Postgres
+        run: |
+          echo "⏳ Waiting for Postgres to be ready..."
+          until pg_isready -h $DATABASE_HOST -p $DATABASE_PORT -U $DATABASE_USER; do
+            sleep 2
+          done
+          echo "✅ Postgres is ready!"
+
       - name: Run tests
         working-directory: backend
         run: |
