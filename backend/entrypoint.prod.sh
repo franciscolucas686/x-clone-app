@@ -3,16 +3,14 @@ set -e
 
 echo "🔍 Verificando se o banco de dados está disponível..."
 
-if [ -n "$DATABASE_URL" ]; then
-  export DATABASE_HOST=$(echo $DATABASE_URL | sed -E 's#.*://.*@(.*):([0-9]+)/.*#\1#')
-  export DATABASE_PORT=$(echo $DATABASE_URL | sed -E 's#.*://.*@(.*):([0-9]+)/.*#\2#')
-fi
+DB_HOST=${DATABASE_HOST:-localhost}
+DB_PORT=${DATABASE_PORT:-5432}
 
-echo "Usando host: $DATABASE_HOST"
-echo "Usando porta: $DATABASE_PORT"
+echo "Usando host: $DB_HOST"
+echo "Usando porta: $DB_PORT"
 
-until nc -z "$DATABASE_HOST" "$DATABASE_PORT"; do
-  echo "⏳ Aguardando o banco de dados em $DATABASE_HOST:$DATABASE_PORT..."
+until nc -z "$DB_HOST" "$DB_PORT"; do
+  echo "⏳ Aguardando o banco de dados em $DB_HOST:$DB_PORT..."
   sleep 2
 done
 
