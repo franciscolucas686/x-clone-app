@@ -19,7 +19,14 @@ echo "✅ Banco de dados disponível!"
 echo "🚀 Aplicando migrações..."
 python manage.py migrate --noinput
 
+echo "📂 Verificando diretórios de mídia..."
 mkdir -p /app/media
+
+if [ ! -d "/app/media-seed/avatars" ]; then
+  echo "⚠️  Diretório /app/media-seed/avatars não encontrado!"
+else
+  echo "✅ Diretório /app/media-seed/avatars encontrado."
+fi
 
 if [ -n "${DJANGO_SUPERUSER_USERNAME:-}" ] && [ -n "${DJANGO_SUPERUSER_PASSWORD:-}" ]; then
   echo "👑 Verificando/Atualizando superusuário..."
@@ -57,6 +64,9 @@ else:
         print("ℹ️ Superusuário já existe e está atualizado.")
 PY
 fi
+
+echo "🌱 Executando seed_data.py e populando dados..."
+python seed_data.py || echo "⚠️ Falha ao executar seed"
 
 echo "✅ Setup completo. Iniciando server..."
 
