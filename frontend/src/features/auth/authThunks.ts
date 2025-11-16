@@ -1,5 +1,6 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import api from "../../api/axios";
+import { translateError } from "../../utils/errors";
 import type { User } from "../users/types";
 
 interface LoginCredentials {
@@ -81,15 +82,13 @@ export const registerUser = createAsyncThunk<
     if (typeof err === "object" && err !== null && "response" in err) {
       const axiosError = err as { response?: { data?: unknown } };
 
-      const message =
-        typeof axiosError.response?.data === "string"
-          ? axiosError.response.data
-          : JSON.stringify(axiosError.response?.data);
+      const raw = axiosError.response?.data;
 
-      if (message.includes("already exists")) {
-        return rejectWithValue("Nome de usuário já existe!");
-      }
-      return rejectWithValue("Erro ao registrar usuário. Tente novamente.");
+      const message = typeof raw === "string" ? raw : JSON.stringify(raw);
+
+      const translated = translateError(message);
+
+      return rejectWithValue(translated);
     }
 
     return rejectWithValue("Erro desconhecido ao registrar usuário.");
