@@ -27,6 +27,8 @@ if [ ! -d "/app/media-seed/avatars" ]; then
 else
   echo "✅ Diretório /app/media-seed/avatars encontrado."
 fi
+#só para debug
+echo "BASE_DIR: $BASE_DIR"
 
 if [ -n "${DJANGO_SUPERUSER_USERNAME:-}" ] && [ -n "${DJANGO_SUPERUSER_PASSWORD:-}" ]; then
   echo "👑 Verificando/Atualizando superusuário..."
