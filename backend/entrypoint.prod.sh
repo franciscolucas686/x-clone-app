@@ -21,7 +21,7 @@ python manage.py migrate --noinput
 
 if [ -n "${DJANGO_SUPERUSER_USERNAME:-}" ] && [ -n "${DJANGO_SUPERUSER_PASSWORD:-}" ]; then
   echo "👑 Verificando/Atualizando superusuário..."
-  python manage.py shell <<'PY'
+  python manage.py shell <<PY
 from django.contrib.auth import get_user_model
 User = get_user_model()
 username = "${DJANGO_SUPERUSER_USERNAME}"
