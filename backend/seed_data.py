@@ -1,30 +1,23 @@
 import os
+import django
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "backend.settings.production")
-
-import django
-import random
-
 django.setup()
 
-
-from django.contrib.auth import get_user_model
 from django.core.files import File
-from followers.models import Follow
-from posts.models import Post, Like, Comment
-
+from django.contrib.auth import get_user_model
+import cloudinary.uploader
 
 User = get_user_model()
 
-
-import os
-from django.core.files import File
-from accounts.models import User
-
+# Caminho da pasta de avatares
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+AVATAR_SEED_DIR = os.path.join(BASE_DIR, "media-seed", "avatars")
 
 def create_users() -> list[User]:
     print("👥 Criando usuários...")
 
+    # Dados dos usuários e seus avatares específicos
     users_data = [
         {"username": "franciscolucas", "name": "Francisco Lucas", "password": "123456Hx(", "avatar": "user1.png"},
         {"username": "matheusfidera", "name": "Matheus Fidera", "password": "123456Ts&", "avatar": "user2.png"},
@@ -32,55 +25,52 @@ def create_users() -> list[User]:
         {"username": "solangecarriel", "name": "Solange Carriel", "password": "123456Rd/", "avatar": "user4.png"},
     ]
 
-    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-    AVATAR_SEED_DIR = os.path.join(BASE_DIR, "media-seed", "avatars")
-
     created_users: list[User] = []
 
     for data in users_data:
         username = data["username"]
 
+        # Verifica se o usuário já existe
         user = User.objects.filter(username=username).first()
-
         if not user:
             user = User.objects.create_user(
                 username=username,
                 name=data["name"],
-                password=data["password"],
+                password=data["password"]
             )
             print(f"✅ Usuário criado: {username}")
         else:
             print(f"ℹ️ Usuário {username} já existe, pulando criação")
 
-        avatar_filename = data.get("avatar") or "default.png"
+        # Envia avatar para Cloudinary
+        avatar_filename = data["avatar"]
         seed_path = os.path.join(AVATAR_SEED_DIR, avatar_filename)
 
-        if not os.path.exists(seed_path):
-            print(f"⚠️ Avatar '{avatar_filename}' não encontrado. Usando default.png")
-            seed_path = os.path.join(AVATAR_SEED_DIR, "default.png")
-
         if os.path.exists(seed_path):
-            print(f"⬆️ Enviando avatar de {username} para o Cloudinary via Django...")
-
-            # Nome final do arquivo no Cloudinary
-            cloudinary_filename = f"{username}.png"
-
-            with open(seed_path, "rb") as img:
-                user.avatar.save(
-                    cloudinary_filename,
-                    File(img),
-                    save=True
-                )
-
+            print(f"⬆️ Enviando avatar de {username} para o Cloudinary...")
+            # Upload direto para Cloudinary
+            result = cloudinary.uploader.upload(
+                seed_path,
+                folder="avatars",
+                public_id=username,
+                overwrite=True
+            )
+            # Salva a URL no campo avatar do usuário
+            user.avatar = result["secure_url"]
+            user.save()
             print(f"🖼️ Avatar aplicado para {username}")
-
         else:
-            print(f"❌ Não foi possível encontrar um avatar válido para {username}")
+            print(f"❌ Avatar '{avatar_filename}' não encontrado para {username}, nenhum avatar será atribuído.")
 
         created_users.append(user)
 
     print("🌱 Usuários criados e avatares enviados com sucesso!")
     return created_users
+
+
+if __name__ == "__main__":
+    create_users()
+
 
 
 def create_followers(users):
