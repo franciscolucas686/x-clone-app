@@ -1,12 +1,13 @@
 import os
-import django
-import random
-import cloudinary
-import cloudinary.uploader
-
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "backend.settings.production")
+
+import django
+import random
+
 django.setup()
+
+import cloudinary.uploader
 
 from django.contrib.auth import get_user_model
 from django.core.files import File
@@ -44,7 +45,9 @@ def create_users():
 
         avatar_filename = data.get("avatar") or "default.png"
 
-        seed_path = os.path.join("media-seed", "avatars", avatar_filename)
+        BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+        seed_path = os.path.join(BASE_DIR,"media-seed", "avatars", avatar_filename)
 
         if not os.path.exists(seed_path):
             print(f"⚠️ Avatar '{avatar_filename}' não encontrado em media-seed. Usando default.png")
