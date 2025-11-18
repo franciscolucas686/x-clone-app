@@ -11,7 +11,7 @@ from django.core.files.storage import default_storage
 
 from posts.models import Post
 from followers.models import Follow
-from interactions.models import Like, Comment
+from posts.models import Like, Comment
 
 User = get_user_model()
 
