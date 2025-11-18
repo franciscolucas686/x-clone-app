@@ -1,5 +1,7 @@
 from .base import *
 import os
+import cloudinary
+
 
 DEBUG = False
 
