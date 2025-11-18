@@ -3,7 +3,7 @@ set -e
 
 echo "🔍 Verificando se o banco de dados está disponível..."
 
-DB_HOST=${DATABASE_HOST:-localhost}
+DB_HOST=${DATABASE_HOST:?DATABASE_HOST is not set!}
 DB_PORT=${DATABASE_PORT:-5432}
 
 echo "Usando host: $DB_HOST"
