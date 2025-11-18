@@ -19,15 +19,6 @@ echo "✅ Banco de dados disponível!"
 echo "🚀 Aplicando migrações..."
 python manage.py migrate --noinput
 
-echo "📂 Verificando diretórios de mídia..."
-mkdir -p /app/media
-
-if [ ! -d "/app/media-seed/avatars" ]; then
-  echo "⚠️  Diretório /app/media-seed/avatars não encontrado!"
-else
-  echo "✅ Diretório /app/media-seed/avatars encontrado."
-fi
-
 if [ -n "${DJANGO_SUPERUSER_USERNAME:-}" ] && [ -n "${DJANGO_SUPERUSER_PASSWORD:-}" ]; then
   echo "👑 Verificando/Atualizando superusuário..."
   python manage.py shell <<'PY'
