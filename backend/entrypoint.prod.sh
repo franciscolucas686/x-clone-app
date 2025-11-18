@@ -66,7 +66,7 @@ PY
 fi
 
 echo "🌱 Executando seed_data.py e populando dados..."
-python seed_data.py || echo "⚠️ Falha ao executar seed"
+python seed_data.py
 
 echo "✅ Setup completo. Iniciando server..."
 
