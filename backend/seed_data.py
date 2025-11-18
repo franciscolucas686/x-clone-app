@@ -1,6 +1,9 @@
 import os
 import django
 import random
+import cloudinary
+import cloudinary.uploader
+
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "backend.settings.production")
 django.setup()
@@ -9,6 +12,7 @@ from django.contrib.auth import get_user_model
 from django.core.files import File
 from followers.models import Follow
 from posts.models import Post, Like, Comment
+
 
 User = get_user_model()
 
@@ -47,16 +51,26 @@ def create_users():
             seed_path = os.path.join("media-seed", "avatars", "default.png")
 
         if os.path.exists(seed_path):
-            with open(seed_path, "rb") as img_file:
-                public_name = f"{user.username}_avatar.png"
-                user.avatar.save(public_name, File(img_file), save=True)
-            print(f"🖼️ Avatar aplicado para {user.username}")
+            print(f"⬆️ Enviando avatar de {user.username} para o Cloudinary...")
+
+            result = cloudinary.uploader.upload(
+                seed_path,
+                folder="xclone/avatars",
+                public_id=user.username,
+                overwrite=True,
+                resource_type="image"
+            )
+
+            user.avatar = result["secure_url"]
+            user.save()
+
+            print(f"🖼️ Avatar hospedado e aplicado para {user.username}")
         else:
-            print(f"❌ ERRO: Nem o avatar nem o default.png foram encontrados!")
+            print("❌ Nenhum arquivo de avatar encontrado para enviar!")
 
         created_users.append(user)
 
-    print("✅ Todos os usuários processados com sucesso!")
+    print("🌱 Usuários criados e avatares enviados ao Cloudinary!")
     return created_users
 
 
