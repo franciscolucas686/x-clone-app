@@ -1,23 +1,53 @@
 import os
 import django
+import random
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "backend.settings.production")
 django.setup()
 
 from django.core.files import File
 from django.contrib.auth import get_user_model
-import cloudinary.uploader
+from django.core.files.storage import default_storage
+
+from posts.models import Post
+from accounts.models import Follow
+from interactions.models import Like, Comment
 
 User = get_user_model()
 
-# Caminho da pasta de avatares
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 AVATAR_SEED_DIR = os.path.join(BASE_DIR, "media-seed", "avatars")
+
+
+def safe_avatar_upload(user: User, avatar_filename: str) -> None:
+    """
+    Envia avatar para o Cloudinary usando o storage padrão do Django.
+    """
+    local_path = os.path.join(AVATAR_SEED_DIR, avatar_filename)
+
+    if not os.path.exists(local_path):
+        print(f"⚠️ Avatar '{avatar_filename}' não encontrado. Usando default.png")
+        local_path = os.path.join(AVATAR_SEED_DIR, "default.png")
+
+        if not os.path.exists(local_path):
+            print("❌ default.png não encontrado. Avatar não será atribuído.")
+            return
+
+    print(f"⬆️ Enviando avatar para {user.username}...")
+
+    with open(local_path, "rb") as f:
+        file_name = f"avatars/{user.username}.png"
+        saved_path = default_storage.save(file_name, File(f))
+
+    user.avatar = saved_path
+    user.save(update_fields=["avatar"])
+
+    print(f"🖼️ Avatar enviado para {user.username}")
+
 
 def create_users() -> list[User]:
     print("👥 Criando usuários...")
 
-    # Dados dos usuários e seus avatares específicos
     users_data = [
         {"username": "franciscolucas", "name": "Francisco Lucas", "password": "123456Hx(", "avatar": "user1.png"},
         {"username": "matheusfidera", "name": "Matheus Fidera", "password": "123456Ts&", "avatar": "user2.png"},
@@ -28,56 +58,26 @@ def create_users() -> list[User]:
     created_users: list[User] = []
 
     for data in users_data:
-        username = data["username"]
+        user = User.objects.filter(username=data["username"]).first()
 
-        # Verifica se o usuário já existe
-        user = User.objects.filter(username=username).first()
         if not user:
             user = User.objects.create_user(
-                username=username,
+                username=data["username"],
                 name=data["name"],
-                password=data["password"]
+                password=data["password"],
             )
-            print(f"✅ Usuário criado: {username}")
+            print(f"✅ Usuário criado: {user.username}")
         else:
-            print(f"ℹ️ Usuário {username} já existe, pulando criação")
+            print(f"ℹ️ Usuário {user.username} já existe")
 
-        # Envia avatar para Cloudinary
-        avatar_filename = data["avatar"]
-        seed_path = os.path.join(AVATAR_SEED_DIR, avatar_filename)
-
-        if os.path.exists(seed_path):
-            print(f"⬆️ Enviando avatar de {username} para o Cloudinary...")
-            # Upload direto para Cloudinary
-            result = cloudinary.uploader.upload(
-                seed_path,
-                folder="avatars",
-                public_id=username,
-                overwrite=True
-            )
-            # Salva a URL no campo avatar do usuário
-            user.avatar = result["secure_url"]
-            user.save()
-            print(f"🖼️ Avatar aplicado para {username}")
-        else:
-            print(f"❌ Avatar '{avatar_filename}' não encontrado para {username}, nenhum avatar será atribuído.")
-
+        safe_avatar_upload(user, data["avatar"])
         created_users.append(user)
 
-    print("🌱 Usuários criados e avatares enviados com sucesso!")
+    print("🌱 Usuários criados com sucesso!")
     return created_users
 
 
-if __name__ == "__main__":
-    create_users()
-
-
-
-def create_followers(users):
-    if len(users) < 2:
-        print("⚠️ Poucos usuários para followers. Pulando.")
-        return
-
+def create_followers(users: list[User]) -> None:
     print("🔗 Criando followers...")
 
     for user in users:
@@ -90,22 +90,15 @@ def create_followers(users):
     print("✅ Followers criados!")
 
 
-def create_posts(users):
+def create_posts(users: list[User]) -> list[Post]:
     print("📝 Criando posts...")
-    posts = []
+    posts: list[Post] = []
 
     texts = [
         "A persistência é a chave para o sucesso. 🔑",
         "Hora de colocar a playlist para tocar e começar a codar! 🎧💻",
         "Um dia de cada vez, com foco e determinação. ✨",
         "O sol da manhã recarrega as energias. ☀️🔋",
-        "Focando em novos projetos e desafios. 💡",
-        "A leitura abre portas para novos mundos. 📚🌍",
-        "Sextou com S de sucesso nos planos da semana. 🥳🗓️",
-        "Aproveitando o momento para respirar fundo e planejar. 🧘‍♀️",
-        "Metas claras, ações focadas, resultados garantidos. 🎯",
-        "Revisando o código e otimizando o sistema. 🔧",
-        "A criatividade está fluindo hoje! 🎨",
     ]
 
     for user in users:
@@ -121,7 +114,7 @@ def create_posts(users):
     return posts
 
 
-def create_likes_and_comments(users, posts):
+def create_likes_and_comments(users: list[User], posts: list[Post]):
     print("❤️ Criando likes e comentários...")
 
     comments = [
@@ -134,7 +127,6 @@ def create_likes_and_comments(users, posts):
 
     for post in posts:
         likers = random.sample(users, k=random.randint(1, len(users)))
-
         for liker in likers:
             Like.objects.get_or_create(user=liker, post=post)
 
@@ -150,14 +142,12 @@ def create_likes_and_comments(users, posts):
 
 
 def run():
-    print("🌱 Iniciando seed de dados...")
-
+    print("🌱 Iniciando seed...")
     users = create_users()
     create_followers(users)
     posts = create_posts(users)
     create_likes_and_comments(users, posts)
-
-    print("🌿 Seed completo com sucesso!")
+    print("🌿 Seed completo!")
 
 
 if __name__ == "__main__":
