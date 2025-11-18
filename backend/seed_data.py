@@ -48,7 +48,8 @@ def create_users():
 
         if os.path.exists(seed_path):
             with open(seed_path, "rb") as img_file:
-                user.avatar.save(avatar_filename, File(img_file), save=True)
+                public_name = f"{user.username}_avatar.png"
+                user.avatar.save(public_name, File(img_file), save=True)
             print(f"🖼️ Avatar aplicado para {user.username}")
         else:
             print(f"❌ ERRO: Nem o avatar nem o default.png foram encontrados!")
