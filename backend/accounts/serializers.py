@@ -19,12 +19,12 @@ class RegisterSerializer(serializers.ModelSerializer):
         return obj.date_joined.strftime("%d/%m/%Y")
 
     def get_avatar_url(self, obj):
-        if not obj.avatar:
-            return None
-        try:
-            return obj.avatar.url
-        except Exception:
-            return None
+        if obj.avatar:
+            try:
+                return obj.avatar.url.replace("/media/", "")
+            except Exception:
+                return None
+        return None
 
     def validate(self, data):
         if data['password'] != data['confirm_password']:
@@ -51,13 +51,10 @@ class RegisterSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("Este nome de usuário já está em uso.")
         return value
     
-
-    
 class UserProfileSerializer(serializers.ModelSerializer):
     joined_display = serializers.SerializerMethodField()
     password = serializers.CharField(write_only=True, required=False)
     confirm_password = serializers.CharField(write_only=True, required=False)
-    avatar = serializers.ImageField(write_only=True, required=False)
     avatar_url = serializers.SerializerMethodField()
 
     followers_count = serializers.SerializerMethodField()
@@ -84,12 +81,12 @@ class UserProfileSerializer(serializers.ModelSerializer):
         return obj.date_joined.strftime("%d/%m/%Y")
     
     def get_avatar_url(self, obj):
-        if not obj.avatar:
-            return None
-        try:
-            return obj.avatar.url
-        except Exception:
-            return None
+        if obj.avatar:
+            try:
+                return obj.avatar.url.replace("/media/", "")
+            except Exception:
+                return None
+        return None
 
     def get_is_following(self, obj):
         request = self.context.get("request")
