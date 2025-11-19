@@ -1,6 +1,5 @@
 from .base import *
 import os
-import cloudinary
 
 
 
@@ -31,6 +30,7 @@ INSTALLED_APPS += [
     'cloudinary',
     'cloudinary_storage',
 ]
+
 CLOUDINARY_STORAGE = {
     "CLOUD_NAME": os.getenv("CLOUDINARY_CLOUD_NAME"),
     "API_KEY": os.getenv("CLOUDINARY_API_KEY"),
@@ -38,6 +38,13 @@ CLOUDINARY_STORAGE = {
 }
 
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+
+STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+
+MIDDLEWARE.insert(1, "whitenoise.middleware.WhiteNoiseMiddleware")
+
+MEDIA_URL = ""
 
 CORS_ALLOW_ALL_ORIGINS = False
 
@@ -49,10 +56,3 @@ local_origins = [
 CORS_ALLOWED_ORIGINS = [f"https://{host}" for host in ALLOWED_HOSTS if not host.startswith("*")]
 CORS_ALLOWED_ORIGINS += local_origins
 
-STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
-STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
-
-MIDDLEWARE.insert(1, "whitenoise.middleware.WhiteNoiseMiddleware")
-
-MEDIA_URL = ""
-MEDIA_ROOT = ""
