@@ -25,6 +25,7 @@ class RegisterSerializer(serializers.ModelSerializer):
             except Exception:
                 return None
         return None
+    
 
 
     def validate(self, data):
@@ -88,6 +89,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
             except Exception:
                 return None
         return None
+    
 
     def get_is_following(self, obj):
         request = self.context.get("request")
