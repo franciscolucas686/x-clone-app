@@ -21,10 +21,11 @@ class RegisterSerializer(serializers.ModelSerializer):
     def get_avatar_url(self, obj):
         if obj.avatar:
             try:
-                return obj.avatar.url.replace("/media/", "")
+                return obj.avatar.url
             except Exception:
                 return None
         return None
+
 
     def validate(self, data):
         if data['password'] != data['confirm_password']:
@@ -83,7 +84,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
     def get_avatar_url(self, obj):
         if obj.avatar:
             try:
-                return obj.avatar.url.replace("/media/", "")
+                return obj.avatar.url
             except Exception:
                 return None
         return None
