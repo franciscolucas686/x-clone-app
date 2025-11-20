@@ -33,10 +33,12 @@ class RegisterSerializer(serializers.ModelSerializer):
             password=validated_data['password']
         )
 
-        if avatar:
+        if not avatar:
+            user.avatar = "https://res.cloudinary.com/dh5rxxtqe/image/upload/v1763632324/xclone/avatars/default.png"
+        else:
             user.avatar = avatar
-            user.save()
         
+        user.save(update_fields=["avatar"])
         return user
     
 class UserProfileSerializer(serializers.ModelSerializer):
