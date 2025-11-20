@@ -5,6 +5,8 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 from accounts.models import User
 from rest_framework_simplejwt.tokens import AccessToken
 from datetime import timedelta
+from PIL import Image
+import io
 
 class AuthTests(APITestCase):
     def setUp(self):
@@ -26,12 +28,11 @@ class AuthTests(APITestCase):
         )
 
     def generate_test_image(self):
-        """Gera um avatar PNG de teste"""
-        return SimpleUploadedFile(
-            "avatar.png",
-            b"\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR\x00\x00\x00\x01",
-            content_type="image/png"
-        )
+        img = Image.new('RGB', (10, 10), color='red')
+        img_byte_arr = io.BytesIO()
+        img.save(img_byte_arr, format='PNG')
+        img_byte_arr.seek(0)
+        return SimpleUploadedFile("avatar.png", img_byte_arr.read(), content_type="image/png")
     
     def test_user_registration(self):
         response = self.client.post(self.register_url, self.user_data, format='json')
@@ -92,7 +93,7 @@ class AuthTests(APITestCase):
         response = self.client.patch(
             self.profile_url,
             data={
-                'username': '@updateduser',
+                'username': 'updateduser',
                 'name': 'New Name',
                 'avatar': new_avatar
             },
@@ -100,7 +101,7 @@ class AuthTests(APITestCase):
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.user.refresh_from_db()
-        self.assertEqual(self.user.username, '@updateduser')
+        self.assertEqual(self.user.username, 'updateduser')
         self.assertEqual(self.user.name, 'New Name')
         self.assertTrue(bool(self.user.avatar))
         self.assertIn('avatar_url', response.data)
