@@ -7,7 +7,7 @@ from datetime import datetime
 class RegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True, validators=[validate_password])
     confirm_password = serializers.CharField(write_only=True)
-    avatar = serializers.ImageField(required=False, allow_null=True)
+    avatar = serializers.CharField(required=False, allow_null=True)
     avatar_url = serializers.SerializerMethodField()
     joined_display = serializers.SerializerMethodField()
 
@@ -21,7 +21,7 @@ class RegisterSerializer(serializers.ModelSerializer):
     def get_avatar_url(self, obj):
         if obj.avatar:
             try:
-                return obj.avatar.url
+                return obj.avatar
             except Exception:
                 return None
         return None
@@ -85,7 +85,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
     def get_avatar_url(self, obj):
         if obj.avatar:
             try:
-                return obj.avatar.url
+                return obj.avatar
             except Exception:
                 return None
         return None
