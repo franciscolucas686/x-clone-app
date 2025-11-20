@@ -54,6 +54,7 @@ export default function LoginModal({ onClose }: LoginModalProps) {
           value={form.password}
           onChange={(e) => setForm({ ...form, password: e.target.value })}
           className="p-2 border rounded focus:border-blue-500 outline-none box-border"
+          required
         />
         {error && <p className="text-red-500 text-sm text-center">{error}</p>}
         <button className="btn" type="submit" disabled={loading}>
