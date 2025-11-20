@@ -1,9 +1,7 @@
-# seed_data.py
 import os
 import django
 import random
 import cloudinary.uploader
-from django.core.files import File
 from django.contrib.auth import get_user_model
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "backend.settings.production")
@@ -119,14 +117,30 @@ def create_likes_and_comments(users, posts):
             Comment.objects.create(user=commenter, post=post, text=random.choice(comments))
     print("✅ Likes e comentários criados!")
 
+def upload_default_avatar():
+    default_path = os.path.join(AVATAR_SEED_DIR, "default.png")
+    if not os.path.exists(default_path):
+        print("⚠️ default.png não encontrado!")
+        return None
+    
+    print("⬆️ Uploading default.png para Cloudinary...")
+    secure_url = upload_avatar_to_cloudinary(default_path, public_id="default")
+    if secure_url:
+        print(f"🖼️ default.png enviado: {secure_url}")
+    else:
+        print("❌ Falha no upload de default.png")
+    return secure_url
+
+
 
 def run():
-    print("🌱 Running seed...")
+    print("🌱 Carregando seed...")
+    upload_default_avatar()
     users = create_users()
     create_followers(users)
     posts = create_posts(users)
     create_likes_and_comments(users, posts)
-    print("🌿 Seed finished.")
+    print("🌿 Seed finalizado.")
 
 
 if __name__ == "__main__":
