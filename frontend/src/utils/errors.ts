@@ -15,6 +15,7 @@ export function translateError(msg: string): string {
     "too common": "A senha é muito comum. Escolha outra.",
     "entirely numeric": "A senha não pode ser apenas números.",
     "already exists": "Esse nome de usuário já existe.",
+    "This field must be unique.": "Esse nome de usuário já existe.",
   };
 
   for (const key in map) {

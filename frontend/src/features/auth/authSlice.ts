@@ -1,9 +1,14 @@
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { createSlice } from "@reduxjs/toolkit";
 import type { RootState } from "../../app/store";
-import { loginUser, restoreUser, updateProfile } from "./authThunks";
 import type { User } from "../users/types";
-import {fetchUserByUsername} from "../users/userThunks";
+import { fetchUserByUsername } from "../users/userThunks";
+import {
+  loginUser,
+  registerUser,
+  restoreUser,
+  updateProfile,
+} from "./authThunks";
 interface AuthState {
   user: User | null;
   token: string | null;
@@ -54,6 +59,26 @@ const authSlice = createSlice({
           (action.payload as string) ||
           action.error.message ||
           "Erro ao fazer login.";
+      })
+      .addCase(registerUser.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(
+        registerUser.fulfilled,
+        (state, action: PayloadAction<{ token: string; user: User }>) => {
+          state.loading = false;
+          state.user = action.payload.user;
+          state.token = action.payload.token;
+          localStorage.setItem("access", action.payload.token);
+        }
+      )
+      .addCase(registerUser.rejected, (state, action) => {
+        state.loading = false;
+        state.error =
+          (action.payload as string) ||
+          action.error.message ||
+          "Erro desconhecido ao registrar usuário.";
       })
       .addCase(
         restoreUser.fulfilled,
