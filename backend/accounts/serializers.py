@@ -46,7 +46,6 @@ class UserProfileSerializer(serializers.ModelSerializer):
     joined_display = serializers.SerializerMethodField()
     password = serializers.CharField(write_only=True, required=False)
     confirm_password = serializers.CharField(write_only=True, required=False)
-    avatar = serializers.ImageField(required=False, allow_null=True)
 
     followers_count = serializers.SerializerMethodField()
     following_count = serializers.SerializerMethodField()
