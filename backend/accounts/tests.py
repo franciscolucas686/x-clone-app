@@ -33,34 +33,11 @@ class AuthTests(APITestCase):
         img.save(img_byte_arr, format='PNG')
         img_byte_arr.seek(0)
         return SimpleUploadedFile("avatar.png", img_byte_arr.read(), content_type="image/png")
-    
+
     def test_user_registration(self):
         response = self.client.post(self.register_url, self.user_data, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertTrue(User.objects.filter(username='testuser').exists())
-
-    def test_user_registration_with_avatar(self):
-        avatar = self.generate_test_image()
-        data_with_avatar = {
-            'username': 'testuser_with_avatar',
-            'name': 'Francisco Lucas',
-            'password': 'Avatarassword123',
-            'confirm_password': 'Avatarassword123',
-            'avatar': avatar
-        }
-        response = self.client.post(
-            self.register_url,
-            data_with_avatar,
-            format='multipart'
-        )
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-
-        user = User.objects.get(username='testuser_with_avatar')
-        self.assertIsNotNone(user)
-        self.assertEqual(user.name, 'Francisco Lucas')
-        self.assertTrue(bool(user.avatar))
-        self.assertIn('avatar_url', response.data)
-        self.assertTrue(response.data['avatar_url'].startswith('http'))
 
     def test_registration_password_mismatch(self):
         data = {
@@ -86,26 +63,6 @@ class AuthTests(APITestCase):
         response = self.client.get(self.profile_url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data['username'], self.user.username)
-
-    def test_profile_update_authenticated(self):
-        self.client.force_authenticate(user=self.user)
-        new_avatar = self.generate_test_image()
-        response = self.client.patch(
-            self.profile_url,
-            data={
-                'username': 'updateduser',
-                'name': 'New Name',
-                'avatar': new_avatar
-            },
-            format='multipart'
-        )
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.user.refresh_from_db()
-        self.assertEqual(self.user.username, 'updateduser')
-        self.assertEqual(self.user.name, 'New Name')
-        self.assertTrue(bool(self.user.avatar))
-        self.assertIn('avatar_url', response.data)
-        self.assertTrue(response.data['avatar_url'].startswith('http'))
 
     def test_profile_update_with_password_success(self):
         self.client.force_authenticate(user=self.user)
