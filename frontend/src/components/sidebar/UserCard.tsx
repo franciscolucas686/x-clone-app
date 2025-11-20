@@ -12,7 +12,7 @@ export default function UserCard() {
       <div className="flex items-center justify-between p-2 rounded-full hover:bg-gray-200 cursor-pointer transition-colors duration-200 ease-in-out">
         <div className="flex items-center space-x-2 min-w-0">
           <img
-            src={user?.avatar}
+            src={user?.avatar} 
             className="max-w-full object-cover h-10 w-10 rounded-full flex-shrink-0 overflow-y-hidden"
           />
           <div className="hidden lg:block">
