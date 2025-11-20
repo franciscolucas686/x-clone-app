@@ -101,8 +101,21 @@ class UserProfileSerializer(serializers.ModelSerializer):
         return data
 
     def update(self, instance, validated_data):
+        from cloudinary.uploader import upload
+
         password = validated_data.pop("password", None)
         validated_data.pop("confirm_password", None)
+
+        avatar_file = validaded_data.pop("avatar", None)
+        if avatar_file:
+
+            res = upload(
+                avatar_file,
+                folder="xclone/avatars",
+                public_id=instance.username,
+                overwrite=True
+            )
+            instance.avatar = res.get("secure_url")
 
         for attr, value in validated_data.items():
             setattr(instance, attr, value)
