@@ -27,13 +27,6 @@ class AuthTests(APITestCase):
             password='ExistingPassword123'
         )
 
-    def generate_test_image(self):
-        img = Image.new('RGB', (10, 10), color='red')
-        img_byte_arr = io.BytesIO()
-        img.save(img_byte_arr, format='PNG')
-        img_byte_arr.seek(0)
-        return SimpleUploadedFile("avatar.png", img_byte_arr.read(), content_type="image/png")
-
     def test_user_registration(self):
         response = self.client.post(self.register_url, self.user_data, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
