@@ -1,8 +1,6 @@
 from rest_framework import serializers
 from .models import User
 from django.contrib.auth.password_validation import validate_password
-from django.utils.timesince import timesince
-from datetime import datetime
 
 class RegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True, validators=[validate_password])
@@ -36,11 +34,6 @@ class RegisterSerializer(serializers.ModelSerializer):
             user.save()
         
         return user
-    
-    def validate_username(self, value):
-        if User.objects.filter(username=value).exists():
-            raise serializers.ValidationError("Este nome de usuário já está em uso.")
-        return value
     
 class UserProfileSerializer(serializers.ModelSerializer):
     joined_display = serializers.SerializerMethodField()
