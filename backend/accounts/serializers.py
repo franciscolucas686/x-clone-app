@@ -2,6 +2,7 @@ from rest_framework import serializers
 from .models import User
 from django.contrib.auth.password_validation import validate_password
 from rest_framework.validators import UniqueValidator
+from cloudinary.uploader import upload
 
 class RegisterSerializer(serializers.ModelSerializer):
     username = serializers.CharField(
@@ -101,16 +102,13 @@ class UserProfileSerializer(serializers.ModelSerializer):
         return data
 
     def update(self, instance, validated_data):
-        from cloudinary.uploader import upload
-
         password = validated_data.pop("password", None)
         validated_data.pop("confirm_password", None)
 
-        avatar_file = validaded_data.pop("avatar", None)
-        if avatar_file:
-
+        avatar= validated_data.pop("avatar", None)
+        if avatar:
             res = upload(
-                avatar_file,
+                avatar,
                 folder="xclone/avatars",
                 public_id=instance.username,
                 overwrite=True
