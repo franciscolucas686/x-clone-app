@@ -14,7 +14,7 @@ export default function RegisterModal({ onClose }: RegisterModalProps) {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
-  const { user, loading, error } = useAppSelector((state) => state.auth);
+  const { loading, error } = useAppSelector((state) => state.auth);
 
   const [form, setForm] = useState({
     username: "",
@@ -28,13 +28,6 @@ export default function RegisterModal({ onClose }: RegisterModalProps) {
     dispatch(clearError());
   }, [dispatch]);
 
-  useEffect(() => {
-    if (user) {
-      onClose();
-      navigate("/feed");
-    }
-  }, [user, navigate, onClose]);
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLocalError(null);
@@ -47,6 +40,11 @@ export default function RegisterModal({ onClose }: RegisterModalProps) {
     const resultAction = await dispatch(registerUser(form));
     if (registerUser.rejected.match(resultAction) && resultAction.payload) {
       setLocalError(resultAction.payload);
+    }
+
+    if (registerUser.fulfilled.match(resultAction)) {
+      onClose();
+      navigate("/feed");
     }
   };
 
