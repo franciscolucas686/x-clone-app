@@ -105,7 +105,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
         password = validated_data.pop("password", None)
         validated_data.pop("confirm_password", None)
 
-        avatar= validated_data.pop("avatar", None)
+        avatar = validated_data.pop("avatar", None)
         if avatar:
             res = upload(
                 avatar,
