@@ -1,13 +1,10 @@
-from rest_framework.test import APITestCase
 from django.urls import reverse
 from rest_framework import status
-from accounts.models import User
-from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework.test import APITestCase
 from django.core.files.uploadedfile import SimpleUploadedFile
-import io
-from PIL import Image
-from datetime import timedelta
+from accounts.models import User
 from rest_framework_simplejwt.tokens import AccessToken
+from datetime import timedelta
 
 class AuthTests(APITestCase):
     def setUp(self):
@@ -29,16 +26,13 @@ class AuthTests(APITestCase):
         )
 
     def generate_test_image(self):
-        file = io.BytesIO()
-        image = Image.new('RGB', (100, 100), color='blue')
-        image.save(file, format='PNG')
-        file.seek(0)
+        """Gera um avatar PNG de teste"""
         return SimpleUploadedFile(
-            name="test_image.png",
-            content=file.read(),
+            "avatar.png",
+            b"\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR\x00\x00\x00\x01",
             content_type="image/png"
         )
-
+    
     def test_user_registration(self):
         response = self.client.post(self.register_url, self.user_data, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
@@ -59,6 +53,7 @@ class AuthTests(APITestCase):
             format='multipart'
         )
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
         user = User.objects.get(username='testuser_with_avatar')
         self.assertIsNotNone(user)
         self.assertEqual(user.name, 'Francisco Lucas')
@@ -92,6 +87,7 @@ class AuthTests(APITestCase):
         self.assertEqual(response.data['username'], self.user.username)
 
     def test_profile_update_authenticated(self):
+        self.client.force_authenticate(user=self.user)
         new_avatar = self.generate_test_image()
         response = self.client.patch(
             self.profile_url,
@@ -123,7 +119,6 @@ class AuthTests(APITestCase):
         self.assertEqual(self.user.name, 'Updated Name')
         self.assertTrue(self.user.check_password('NewSecurePass123!'))
 
-
     def test_profile_update_with_password_mismatch(self):
         self.client.force_authenticate(user=self.user)
         data = {
@@ -135,15 +130,11 @@ class AuthTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertIn('confirm_password', response.data)
 
-
     def test_token_expired(self):
         expired_token = AccessToken.for_user(self.user)
         expired_token.set_exp(lifetime=timedelta(seconds=-1))
-
         self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {str(expired_token)}')
-
         response = self.client.get(self.profile_url)
-
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
         self.assertIn('detail', response.data)
         self.assertEqual(response.data['detail'].code, 'token_not_valid')
