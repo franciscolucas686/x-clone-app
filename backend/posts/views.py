@@ -35,7 +35,9 @@ class FollowingPostsView(generics.ListAPIView):
 
     def get_queryset(self):
         user = self.request.user
-        following_users = self.request.user.following.all().values_list("following", flat=True)
+        following_users = (
+        self.request.user.following.all().values_list("following", flat=True)
+        )
         return (
             Post.objects
             .filter(Q(user__id__in=following_users) | Q(user=user))
