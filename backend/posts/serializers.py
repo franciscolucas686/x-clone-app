@@ -1,9 +1,9 @@
 from rest_framework import serializers
 from .models import Post, Like, Comment
-from accounts.serializers import UserProfileSerializer
+from accounts.serializers import UserFeedSerializer
 
 class CommentSerializer(serializers.ModelSerializer):
-    user = UserProfileSerializer(read_only=True)
+    user = UserFeedSerializer(read_only=True)
     post = serializers.PrimaryKeyRelatedField(read_only=True)
 
 
@@ -12,7 +12,7 @@ class CommentSerializer(serializers.ModelSerializer):
         fields = ['id', 'user', 'post', 'text', 'created_at']
 
 class PostSerializer(serializers.ModelSerializer):
-    user = UserProfileSerializer(read_only=True)
+    user = UserFeedSerializer(read_only=True)
     likes_count = serializers.SerializerMethodField()
     comments_count = serializers.SerializerMethodField()
     comments = CommentSerializer(many=True, read_only=True)
