@@ -15,6 +15,17 @@ User = get_user_model()
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 AVATAR_SEED_DIR = os.path.join(BASE_DIR, "media-seed", "avatars")
 
+def reset_database():
+    print("🗑️ Limpando banco antes do seed...")
+
+    Comment.objects.all().delete()
+    Like.objects.all().delete()
+    Post.objects.all().delete()
+    Follow.objects.all().delete()
+    User.objects.all().delete()
+
+    print("🔄 Banco limpo!")
+
 
 def upload_avatar_to_cloudinary(local_path: str, public_id: str) -> str | None:
     try:
@@ -135,6 +146,9 @@ def upload_default_avatar():
 
 def run():
     print("🌱 Carregando seed...")
+
+    reset_database()
+    
     upload_default_avatar()
     users = create_users()
     create_followers(users)
