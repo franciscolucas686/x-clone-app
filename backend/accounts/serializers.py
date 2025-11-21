@@ -127,3 +127,11 @@ class UserProfileSerializer(serializers.ModelSerializer):
 
         instance.save()
         return instance
+
+
+class UserFeedSerializer(serializers.ModelSerializer):
+    avatar_url = serializers.CharField(source='avatar', read_only=True)
+
+    class Meta:
+        model = User
+        fields = ['id', 'username', 'name', 'avatar_url']
