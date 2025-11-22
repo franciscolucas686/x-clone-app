@@ -45,7 +45,7 @@ export default function ButtonPostModal({ onClose }: ButtonPostModalProps) {
       <form onSubmit={handleSubmit} className="p-2 border-gray-200 mt-4">
         <div className="flex items-start space-x-2 pb-4">
           <img
-            src={user?.avatar}
+            src={user?.avatar_url}
             alt={user?.name}
             className="w-12 h-12 object-cover rounded-full flex-shrink-0"
           />

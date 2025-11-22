@@ -45,7 +45,7 @@ export default function Profile() {
         <div className="h-40 bg-gray-300" />
         <div className="flex items-end px-4 -mt-16">
           <img
-            src={user?.avatar}
+            src={user?.avatar_url}
             alt={user?.name}
             className="w-32 h-32 object-cover rounded-full border-4 border-white"
           />
