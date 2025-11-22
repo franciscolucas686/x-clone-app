@@ -84,6 +84,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
     
     def get_is_following(self, obj):
         request = self.context.get("request")
+        
         if not request or not request.user.is_authenticated:
             return False
         
