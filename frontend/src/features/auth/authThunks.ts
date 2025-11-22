@@ -20,13 +20,14 @@ interface LoginResponse {
   user: User;
 }
 
-interface UpdateProfilePayload {
+export interface UpdateProfilePayload {
   name?: string;
   username?: string;
   password?: string;
   confirm_password?: string;
   avatar?: File | null;
 }
+
 
 export const loginUser = createAsyncThunk<
   LoginResponse,
@@ -109,27 +110,20 @@ export const restoreUser = createAsyncThunk<User | null>(
   }
 );
 
-export const updateProfile = createAsyncThunk<
-  User,
-  UpdateProfilePayload,
-  { rejectValue: string }
->("auth/updateProfile", async (data, { rejectWithValue }) => {
-  try {
-    const formData = new FormData();
-    Object.entries(data).forEach(([key, value]) => {
-      if (
-        value !== undefined &&
-        value !== null &&
-        value !== "" &&
-        !(key == "confirm_password" && !data.password)
-      ) {
-        formData.append(key, value instanceof File ? value : value);
-      }
-    });
+export const updateProfile = createAsyncThunk<User, UpdateProfilePayload, { rejectValue: string }>(
+  "auth/updateProfile",
+  async (data, { rejectWithValue }) => {
+    try {
+      const formData = new FormData();
+      Object.entries(data).forEach(([key, value]) => {
+        if (value !== undefined && value !== null && value !== "") {
+          formData.append(key, value instanceof File ? value : String(value));
+        }
+      });
 
-    const res = await api.patch<User>("/profile/", formData, {
-      headers: { "Content-Type": "multipart/form-data" },
-    });
+      const res = await api.patch<User>("/profile/", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
 
     return res.data;
   } catch (err: unknown) {

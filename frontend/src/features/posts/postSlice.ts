@@ -16,6 +16,8 @@ interface PostState {
   commentingPostIds: number[];
   likingPostIds: number[];
   error: string | null;
+  nextUrl: string | null;
+  hasMore: boolean;
 }
 
 const initialState: PostState = {
@@ -25,6 +27,8 @@ const initialState: PostState = {
   creating: false,
   likingPostIds: [],
   commentingPostIds: [],
+  nextUrl: null,
+  hasMore: true,
 };
 
 const postSlice = createSlice({
@@ -34,7 +38,6 @@ const postSlice = createSlice({
   extraReducers: (builder) => {
     builder
 
-      // === Buscar posts (geral) ===
       .addCase(fetchPosts.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -48,16 +51,28 @@ const postSlice = createSlice({
         state.error = action.error.message ?? "Erro ao buscar posts";
       })
 
-      // === Buscar posts de quem o usuário segue ===
       .addCase(fetchFollowingPosts.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
       .addCase(
         fetchFollowingPosts.fulfilled,
-        (state, action: PayloadAction<Post[]>) => {
+        (
+          state,
+          action: PayloadAction<{
+            results: Post[];
+            next: string | null;
+            isInitialLoad: boolean;
+          }>
+        ) => {
           state.loading = false;
-          state.items = action.payload;
+          state.nextUrl = action.payload.next;
+
+          if (action.payload.isInitialLoad) {
+            state.items = action.payload.results;
+          } else {
+            state.items.push(...action.payload.results);
+          }
         }
       )
       .addCase(fetchFollowingPosts.rejected, (state, action) => {
@@ -66,7 +81,6 @@ const postSlice = createSlice({
           action.error.message ?? "Erro ao buscar posts dos seguidos";
       })
 
-      // === Criar post ===
       .addCase(createPost.pending, (state) => {
         state.creating = true;
       })
@@ -79,7 +93,6 @@ const postSlice = createSlice({
         state.error = action.error.message ?? "Erro ao criar post";
       })
 
-      // === Curtir/Descurtir post ===
       .addCase(toggleLike.pending, (state, action) => {
         state.likingPostIds.push(action.meta.arg.postId);
       })
@@ -119,7 +132,6 @@ const postSlice = createSlice({
         state.error = action.payload ?? "Erro ao curtir post";
       })
 
-      // === Criar comentário ===
       .addCase(createComment.pending, (state, action) => {
         state.commentingPostIds.push(action.meta.arg.postId);
       })

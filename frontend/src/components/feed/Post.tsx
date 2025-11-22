@@ -20,7 +20,7 @@ export default function Post({ post, onCommentClick }: Props) {
     <div className="p-4 border-b border-gray-200 hover:bg-gray-50">
       <div className="flex items-start space-x-3">
         <img
-          src={post.user.avatar || "/images/default-avatar.png"}
+          src={post.user.avatar_url}
           alt={post.user.name ?? post.user.username}
           className="w-12 h-12 rounded-full flex-shrink-0 object-cover"
         />

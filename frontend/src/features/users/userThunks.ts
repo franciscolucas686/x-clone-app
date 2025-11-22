@@ -6,8 +6,8 @@ import type { RootState } from "../../app/store";
 export const fetchUsers = createAsyncThunk<User[]>(
   "users/fetchUsers",
   async () => {
-    const response = await api.get<User[]>("/users/");
-    return response.data;
+    const response = await api.get("/users/");
+    return response.data.results;
   }
 );
 
