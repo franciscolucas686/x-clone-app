@@ -1,7 +1,8 @@
 import { Heart, MessageCircle } from "lucide-react";
 import { toggleLike } from "../../features/posts/postThunks";
 import type { Post as PostType } from "../../features/posts/types";
-import { useAppDispatch } from "../../hooks/useAppSelector";
+import { useAppDispatch, useAppSelector } from "../../hooks/useAppSelector";
+import { Link } from "react-router-dom";
 
 type Props = {
   post: PostType;
@@ -11,10 +12,17 @@ type Props = {
 export default function Post({ post, onCommentClick }: Props) {
   const dispatch = useAppDispatch();
 
+  const { user } = useAppSelector((state) => state.auth);
+
   const handleLike = (e: React.MouseEvent) => {
     e.stopPropagation();
     dispatch(toggleLike({ postId: post.id }));
   };
+
+  const profileLink =
+    user?.username === post.user.username
+      ? "/profile"
+      : `/user/${post.user.username}`;
 
   return (
     <div className="p-4 border-b border-gray-200 hover:bg-gray-50">
@@ -26,7 +34,9 @@ export default function Post({ post, onCommentClick }: Props) {
         />
         <div className="flex-1">
           <div className="flex items-center justify-between">
-            <h3 className="font-bold cursor-default">@{post.user.username}</h3>
+            <Link to={profileLink}>
+              <h3 className="font-bold cursor-pointer">@{post.user.username}</h3>
+            </Link>
             <span className="text-xs text-gray-400">
               {new Date(post.created_at).toLocaleString()}
             </span>

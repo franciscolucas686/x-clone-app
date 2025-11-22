@@ -50,11 +50,16 @@ const usersSlice = createSlice({
           action: PayloadAction<{ userId: number; isFollowing: boolean }>
         ) => {
           const { userId, isFollowing } = action.payload;
-          const user = state.list.find((u) => u.id === userId);
-          if (user) user.is_following = isFollowing;
+          const target = state.list.find((u) => u.id === userId);
+          if (target) {
+            target.is_following = isFollowing;
+          }
           state.loadingFollowIds = state.loadingFollowIds.filter(
             (id) => id !== userId
           );
+          if (state.selectedUser?.id === userId) {
+            state.selectedUser.is_following = isFollowing;
+          }
         }
       )
       .addCase(toggleFollow.rejected, (state, action) => {
