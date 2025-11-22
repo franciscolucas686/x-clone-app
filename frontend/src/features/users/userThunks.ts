@@ -47,6 +47,7 @@ export const fetchUserByUsername = createAsyncThunk<
         following_count: data.following_count,
         joined_display: data.joined_display,
         is_following: data.is_following ?? false,
+        posts_count: data.posts_count,
       };
     } catch (error: unknown) {
       console.error("Erro ao buscar o usuário:", error);

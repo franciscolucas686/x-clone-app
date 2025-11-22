@@ -40,7 +40,7 @@ export default function PublicProfile() {
             {selectedUser.name}
           </h2>
           <p className="text-gray-500 text-sm cursor-default">
-            @{selectedUser.username}
+            <span>{selectedUser.posts_count}</span> posts
           </p>
         </div>
       </div>
