@@ -40,7 +40,7 @@ export default function Post({ post, onCommentClick }: Props) {
                 e.stopPropagation();
                 onCommentClick?.();
               }}
-              className="flex items-center gap-2 hover:text-blue-500"
+              className="flex items-center gap-2 hover:text-blue-500 cursor-pointer"
             >
               <MessageCircle size={18} />
               <span>{post.comments_count}</span>
@@ -52,8 +52,13 @@ export default function Post({ post, onCommentClick }: Props) {
                 post.is_liked ? "text-red-500" : "hover:text-red-500"
               }`}
             >
-              <div className="p-2 rounded-full hover:bg-red-100">
-                <Heart size={18} />
+              <div className="p-2 rounded-full hover:bg-red-100 cursor-pointer">
+                <Heart
+                  size={18}
+                  className={`${post.is_liked ? "text-red-500" : ""}`}
+                  fill={post.is_liked ? "currentColor" : "none"}
+                  stroke="currentColor"
+                />
               </div>
               <span>{post.likes_count}</span>
             </button>
