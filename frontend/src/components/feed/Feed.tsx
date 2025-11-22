@@ -29,7 +29,6 @@ export default function Feed() {
     if (e) e.preventDefault();
     const text = newPostText.trim();
     if (!text) return;
-
     try {
       await dispatch(createPost({ text })).unwrap();
       setNewPostText("");
@@ -95,10 +94,10 @@ export default function Feed() {
       {!loading && nextUrl && (
         <div className="flex justify-center py-4">
           <button
-            className="px-4 py-2 rounded bg-gray-100 hover:bg-gray-200"
+            className="btn"
             onClick={handleLoadMore}
           >
-            Carregar mais
+            Ver mais postagens
           </button>
         </div>
       )}
