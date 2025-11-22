@@ -1,8 +1,8 @@
-// src/pages/PublicProfile.tsx
 import { ArrowLeft } from "lucide-react";
 import { useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
 import FollowButton from "../components/button/FollowButton";
+import { Spinner } from "../components/spinner/Spinner";
 import { fetchUserByUsername } from "../features/users/userThunks";
 import { useAppDispatch, useAppSelector } from "../hooks/useAppSelector";
 import { formatJoinedDate } from "../utils/date";
@@ -19,7 +19,12 @@ export default function PublicProfile() {
   }, [dispatch, username]);
 
   if (loading || !selectedUser) {
-    return <p className="p-4 text-gray-500">Carregando perfil...</p>;
+    return (
+      <div className="flex justify-center items-center py-6 min-h-[40vh]">
+        <Spinner size={30} color="border-t-blue-500" />
+        <p className="ml-2 text-gray-500">Carregando perfil...</p>
+      </div>
+    );
   }
 
   return (
@@ -44,7 +49,7 @@ export default function PublicProfile() {
         <div className="h-40 bg-gray-300" />
         <div className="flex items-end px-4 -mt-16">
           <img
-            src={selectedUser.avatar}
+            src={selectedUser.avatar_url}
             alt={selectedUser.name}
             className="w-32 h-32 object-cover rounded-full border-4 border-white"
           />

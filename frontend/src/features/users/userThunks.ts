@@ -1,7 +1,7 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import api from "../../api/axios";
-import type { User } from "./types";
 import type { RootState } from "../../app/store";
+import type { User } from "./types";
 
 export const fetchUsers = createAsyncThunk<User[]>(
   "users/fetchUsers",
@@ -15,39 +15,39 @@ export const toggleFollow = createAsyncThunk<
   { userId: number; isFollowing: boolean },
   number,
   { state: RootState }
->("users/toggleFollow", async (userId, { getState, dispatch }) => {
+>("users/toggleFollow", async (userId) => {
   const response = await api.post(`/follow/${userId}/toggle/`);
-  const { auth, users } = getState();
+  const { is_following } = response.data;
 
-  if (users.selectedUser?.username) {
-    await dispatch(fetchUserByUsername(users.selectedUser.username));
-  }
-
-  if (auth.user?.username) {
-    await dispatch(fetchUserByUsername(auth.user.username));
-  }
-
-  return { userId, isFollowing: response.data.is_following };
+  return { userId, isFollowing: is_following };
 });
 
 export const fetchUserByUsername = createAsyncThunk<
   User,
   string,
-  { state: RootState, rejectValue: string }
+  { state: RootState; rejectValue: string }
 >(
   "users/fetchUserByUsername",
-  async (username, { getState,  rejectWithValue }) => {
+  async (username, { getState, rejectWithValue }) => {
     try {
       const { auth } = getState();
       const loggerdUsername = auth.user?.username;
 
       const endpoint =
-        username === loggerdUsername
-          ? "/profile/"
-          : `/users/${username}/`;
+        username === loggerdUsername ? "/profile/" : `/users/${username}/`;
 
       const response = await api.get(endpoint);
-      return response.data as User;
+      const data = response.data;
+      return {
+        id: data.id,
+        username: data.username,
+        name: data.name,
+        avatar_url: data.avatar_url,
+        followers_count: data.followers_count,
+        following_count: data.following_count,
+        joined_display: data.joined_display,
+        is_following: data.is_following ?? false,
+      };
     } catch (error: unknown) {
       console.error("Erro ao buscar o usuário:", error);
       return rejectWithValue("Erro ao buscar o usuário.");
