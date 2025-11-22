@@ -9,15 +9,11 @@ import ModalLayout from "./ModalLayout";
 
 export default function EditProfileModal() {
   const dispatch = useAppDispatch();
-
   const { user, loading, error } = useAppSelector((state) => state.auth);
 
-  useEffect(() => {
-    dispatch(clearError());
-  }, [dispatch]);
-
-  const defaultAvatar = "http://localhost:8000/media/avatars/default.png";
-  const currentAvatar = user?.avatar || defaultAvatar;
+  const defaultAvatar =
+    "https://res.cloudinary.com/dh5rxxtqe/image/upload/v1763632324/xclone/avatars/default.png";
+  const currentAvatar = user?.avatar_url || defaultAvatar;
 
   const [form, setForm] = useState({
     name: user?.name ?? "",
@@ -28,6 +24,10 @@ export default function EditProfileModal() {
   });
 
   const [previewUrl, setPreviewUrl] = useState<string>(currentAvatar);
+
+  useEffect(() => {
+    dispatch(clearError());
+  }, [dispatch]);
 
   useEffect(() => {
     if (form.avatar) {
@@ -51,13 +51,12 @@ export default function EditProfileModal() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (form.password && form.password !== form.confirm_password) {
-      dispatch(clearError());
 
-      if (form.password && form.password !== form.confirm_password) {
-    dispatch(setError("As senhas não coincidem."));
-    return;
-  }
+    dispatch(clearError());
+
+    if (form.password && form.password !== form.confirm_password) {
+      dispatch(setError("As senhas não coincidem."));
+      return;
     }
 
     const result = await dispatch(updateProfile(form));
@@ -76,14 +75,13 @@ export default function EditProfileModal() {
       </h2>
 
       <div className="relative w-48 h-48 m-auto rounded-full">
-        <img
+        <img 
           src={previewUrl}
           alt={form.name || "Foto de perfil"}
-          className="w-full h-full object-cover border-4 border-white bg-gray-100 rounded-full overflow-hidden "
+          className="w-full h-full object-cover border-4 border-white bg-gray-100 rounded-full overflow-hidden"
         />
-
-        <label className="absolute inset-0 flex items-center justify-center rounded-full cursor-pointer bg-black/30  hover:bg-black/50 duration-200 ease-in-out z-10">
-          <Camera size={40} className="text-white" />
+        <label className="absolute inset-0 flex items-center justify-center rounded-full bg-black/30 hover:bg-black/50 duration-200 ease-in-out z-10">
+          <Camera size={40} className="text-white cursor-pointer" />
           <input
             type="file"
             className="hidden"

@@ -12,9 +12,11 @@ export default function ExplorerPage() {
   const [search, setSearch] = useState("");
   const [localLoading, setLocalLoading] = useState(true);
 
-useEffect(() => {
-  dispatch(fetchUsers()).finally(() => setLocalLoading(false));
-}, [dispatch]);
+  useEffect(() => {
+    dispatch(fetchUsers()).finally(() => setLocalLoading(false));
+  }, [dispatch]);
+
+  console.log("users =", users, "tipo =", Array.isArray(users));
 
   const filteredUsers = users.filter(
     (user) =>
@@ -41,7 +43,7 @@ useEffect(() => {
       <div className="space-y-3">
         {loading || localLoading ? (
           <div className="flex items-center justify-center h-[60vh]">
-            <Spinner size={40} color="border-t-blue-500"  />
+            <Spinner size={40} color="border-t-blue-500" />
           </div>
         ) : (
           filteredUsers.map((user) => (
@@ -51,7 +53,7 @@ useEffect(() => {
             >
               <div className="flex items-center gap-3">
                 <img
-                  src={user.avatar}
+                  src={user.avatar_url}
                   alt={user.username}
                   className="w-10 h-10 rounded-full object-cover"
                 />
