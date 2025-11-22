@@ -43,6 +43,8 @@ class FollowTests(APITestCase):
     def test_followers_list(self):
         Follow.objects.create(follower=self.user1, following=self.user2)
         response = self.client.get(self.followers_list_url)
+
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data), 1)
-        self.assertEqual(response.data[0]['following']['username'], 'user2')
+        self.assertEqual(response.data["count"], 1)
+        self.assertEqual(len(response.data["results"]), 1)
+        self.assertEqual(response.data["results"][0]['following']['username'], 'user2')
