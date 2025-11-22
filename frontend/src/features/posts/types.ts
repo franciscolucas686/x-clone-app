@@ -18,3 +18,4 @@ export interface Post {
   comments_count: number;
   is_liked: boolean;
 }
+

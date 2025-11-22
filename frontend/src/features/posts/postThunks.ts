@@ -2,6 +2,7 @@ import { createAsyncThunk } from "@reduxjs/toolkit";
 import axios, { AxiosError } from "axios";
 import api from "../../api/axios";
 import type { PostComment, Post } from "./types";
+import type { PaginatedResponse } from "../../features/pagination/types";
 
 export const fetchPosts = createAsyncThunk<
   Post[],
@@ -23,23 +24,42 @@ export const fetchPosts = createAsyncThunk<
 });
 
 export const fetchFollowingPosts = createAsyncThunk<
-  Post[],
-  void,
+  {
+    results: Post[];
+    next: string | null;
+    isInitialLoad: boolean;
+  },
+  { nextUrl?: string | null } | void,
   { rejectValue: string }
->("posts/fetchFollowingPosts", async (_, { rejectWithValue }) => {
-  try {
-    const { data } = await api.get<Post[]>("/posts/following/");
-    return data;
-  } catch (error: unknown) {
-    if (axios.isAxiosError(error)) {
-      if (error.response?.status === 404) {
-        return [] as Post[];
-      }
-    }
+>(
+  "posts/fetchFollowingPosts",
+  async (arg, { rejectWithValue }) => {
+    try {
+      const nextUrl =
+        arg && "nextUrl" in arg ? arg.nextUrl : undefined;
 
-    return rejectWithValue("Erro ao buscar posts");
+      const endpoint = nextUrl ?? "/posts/following/";
+
+      const { data } = await api.get<PaginatedResponse<Post>>(endpoint);
+
+      return {
+        results: data.results,
+        next: data.next,
+        isInitialLoad: !nextUrl,
+      };
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error)) {
+        return rejectWithValue(
+          error.response?.data?.detail ??
+            "Erro ao buscar posts"
+        );
+      }
+
+      return rejectWithValue("Erro desconhecido ao buscar posts");
+    }
   }
-});
+);
+
 
 export const createPost = createAsyncThunk<
   Post,

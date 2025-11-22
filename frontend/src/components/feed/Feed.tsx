@@ -1,35 +1,46 @@
 import { useEffect, useState } from "react";
 import { Spinner } from "../../components/spinner/Spinner";
-import { createPost, fetchFollowingPosts } from "../../features/posts/postThunks";
+import {
+  createPost,
+  fetchFollowingPosts,
+} from "../../features/posts/postThunks";
 import { useAppDispatch, useAppSelector } from "../../hooks/useAppSelector";
-import CommentModal from "./CommentModal";
+import CommentModal from "../modal/CommentModal";
 import Post from "./Post";
 
 export default function Feed() {
   const dispatch = useAppDispatch();
   const { user } = useAppSelector((state) => state.auth);
-  const { items: posts, loading, error } = useAppSelector((s) => s.posts);
+  const {
+    items: posts,
+    loading,
+    error,
+    nextUrl,
+    creating,
+  } = useAppSelector((s) => s.posts);
+
   const [selectedPostId, setSelectedPostId] = useState<number | null>(null);
   const [newPostText, setNewPostText] = useState("");
-  const [creating, setCreating] = useState(false);
 
   useEffect(() => {
     dispatch(fetchFollowingPosts());
   }, [dispatch]);
-
   const handleCreatePost = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
     const text = newPostText.trim();
     if (!text) return;
-    setCreating(true);
+
     try {
       await dispatch(createPost({ text })).unwrap();
       setNewPostText("");
-      dispatch(fetchFollowingPosts());
     } catch (err) {
       console.error("Erro ao criar post:", err);
-    } finally {
-      setCreating(false);
+    }
+  };
+
+  const handleLoadMore = () => {
+    if (!loading && nextUrl) {
+      dispatch(fetchFollowingPosts({ nextUrl }));
     }
   };
 
@@ -39,7 +50,7 @@ export default function Feed() {
         <form onSubmit={handleCreatePost}>
           <div className="flex items-start space-x-2 pb-4">
             <img
-              src={user?.avatar}
+              src={user?.avatar_url}
               alt={user?.name}
               className="w-12 h-12 object-cover rounded-full flex-shrink-0"
             />
@@ -61,13 +72,9 @@ export default function Feed() {
         </form>
       </div>
 
-      {loading && (
+      {loading && posts.length === 0 && (
         <div className="flex justify-center py-6">
-          {typeof Spinner !== "undefined" ? (
-            <Spinner />
-          ) : (
-            <div>Carregando posts...</div>
-          )}
+          <Spinner size={30} color="border-t-blue-500" />
         </div>
       )}
 
@@ -84,6 +91,23 @@ export default function Feed() {
           onCommentClick={() => setSelectedPostId(p.id)}
         />
       ))}
+
+      {!loading && nextUrl && (
+        <div className="flex justify-center py-4">
+          <button
+            className="px-4 py-2 rounded bg-gray-100 hover:bg-gray-200"
+            onClick={handleLoadMore}
+          >
+            Carregar mais
+          </button>
+        </div>
+      )}
+
+      {loading && posts.length > 0 && (
+        <div className="flex justify-center py-6">
+          <Spinner size={25} color="border-t-blue-500" />
+        </div>
+      )}
 
       {selectedPostId != null && (
         <CommentModal
