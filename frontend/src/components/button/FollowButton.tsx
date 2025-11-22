@@ -1,4 +1,3 @@
-// src/components/FollowButton.tsx
 import { useAppDispatch, useAppSelector } from "../../hooks/useAppSelector";
 import { toggleFollow } from "../../features/users/userThunks";
 

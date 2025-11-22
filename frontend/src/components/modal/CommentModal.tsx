@@ -1,8 +1,8 @@
 import { useState } from "react";
-import { Spinner } from "../../components/spinner/Spinner";
 import { createComment } from "../../features/posts/postThunks";
 import { useAppDispatch, useAppSelector } from "../../hooks/useAppSelector";
-import ModalLayout from "../modal/ModalLayout";
+import { Spinner } from "../spinner/Spinner";
+import ModalLayout from "./ModalLayout";
 
 type Props = {
   postId: number;
@@ -48,7 +48,7 @@ export default function CommentModal({ postId, onClose }: Props) {
       <div className="flex flex-col gap-4 p-4">
         <div className="flex items-start gap-3">
           <img
-            src={post.user.avatar || "/images/default-avatar.png"}
+            src={post.user.avatar_url}
             alt={post.user.name ?? post.user.username}
             className="w-12 h-12 rounded-full object-cover"
           />
@@ -63,7 +63,7 @@ export default function CommentModal({ postId, onClose }: Props) {
             {post.comments.map((c) => (
               <div key={c.id} className="flex items-start gap-3">
                 <img
-                  src={c.user.avatar || "/images/default-avatar.png"}
+                  src={c.user.avatar_url}
                   alt={c.user.name ?? c.user.username}
                   className="w-8 h-8 rounded-full object-cover"
                 />
