@@ -76,7 +76,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
             'posts_count',
         ]
 
-    def get_posts_coount(self, obg):
+    def get_posts_count(self, obg):
         return Post.objects.filter(user=obg).count()
 
     def get_joined_display(self, obj):
