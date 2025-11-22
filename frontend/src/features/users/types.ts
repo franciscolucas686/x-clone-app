@@ -7,6 +7,7 @@ export interface User {
   followers_count?: number;
   following_count?: number;
   is_following?: boolean;
+  posts_count?: number;
 }
 
 export interface UsersState {
