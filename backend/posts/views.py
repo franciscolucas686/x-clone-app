@@ -91,3 +91,21 @@ class CommentPostView(generics.CreateAPIView):
         context = super().get_serializer_context()
         context["request"] = self.request
         return context
+    
+class UserPostsView(generics.ListAPIView):
+    serializer_class = PostSerializer
+    permission_classes = [permissions.AllowAny]
+
+    def get_queryset(self):
+        username = self.kwargs.get("username")
+        return (
+            Post.objects.filter(user__username=username)
+            .select_related("user")
+            .prefetch_related("likes", "comments", "comments__user")
+            .order_by("-created_at")
+        )
+
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        context["request"] = self.request
+        return context
