@@ -3,6 +3,7 @@ from .models import User
 from django.contrib.auth.password_validation import validate_password
 from rest_framework.validators import UniqueValidator
 from cloudinary.uploader import upload
+from posts.models import Post
 
 class RegisterSerializer(serializers.ModelSerializer):
     username = serializers.CharField(
@@ -45,10 +46,14 @@ class RegisterSerializer(serializers.ModelSerializer):
     
 class UserProfileSerializer(serializers.ModelSerializer):
     joined_display = serializers.SerializerMethodField()
+
     password = serializers.CharField(write_only=True, required=False)
     confirm_password = serializers.CharField(write_only=True, required=False)
+
     avatar = serializers.FileField(required=False, write_only=True)
     avatar_url = serializers.CharField(required=False, source="avatar", read_only=True)
+
+    posts_count = serializers.SerializerMethodField()
 
     followers_count = serializers.SerializerMethodField()
     following_count = serializers.SerializerMethodField()
@@ -68,7 +73,11 @@ class UserProfileSerializer(serializers.ModelSerializer):
             'is_following',
             'followers_count',
             'following_count',
+            'posts_count',
         ]
+
+    def get_posts_coount(self, obg):
+        return Post.objects.filter(user=obg).count()
 
     def get_joined_display(self, obj):
         return obj.date_joined.strftime("%d/%m/%Y")
