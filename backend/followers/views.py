@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from django.contrib.auth import get_user_model
 from .models import Follow
-from .serializers import FollowSerializer, FollowCreateSerializer
+from .serializers import UserOnlySerializer
 
 User = get_user_model()
 class FollowToggleView(APIView):
@@ -26,22 +26,21 @@ class FollowToggleView(APIView):
         return Response({'message': 'Você começou a seguir.', 'is_following': True}, status=status.HTTP_201_CREATED)
 
 class FollowersListView(generics.ListAPIView):
-    serializer_class = FollowSerializer
+    serializer_class = UserOnlySerializer
     permission_classes = [permissions.AllowAny]
 
     def get_queryset(self):
-        user_id = self.kwargs.get('user_id')
-        return Follow.objects.filter(following__id=user_id)\
-                            .select_related('follower', 'following')\
-                            .distinct()
-
+        user_id = self.kwargs.get("user_id")
+        return User.objects.filter(
+            follow__following_id=user_id
+        ).distinct()
 
 class FollowingListView(generics.ListAPIView):
-    serializer_class = FollowSerializer
+    serializer_class = UserOnlySerializer
     permission_classes = [permissions.AllowAny]
 
     def get_queryset(self):
-        user_id = self.kwargs.get('user_id')
-        return Follow.objects.filter(follower__id=user_id)\
-                            .select_related('follower', 'following')\
-                            .distinct()
+        user_id = self.kwargs.get("user_id")
+        return User.objects.filter(
+            following__follower_id=user_id
+        ).distinct()
