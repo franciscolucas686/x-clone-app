@@ -1,8 +1,8 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import axios, { AxiosError } from "axios";
 import api from "../../api/axios";
-import type { PostComment, Post } from "./types";
 import type { PaginatedResponse } from "../../features/pagination/types";
+import type { Post, PostComment } from "./types";
 
 export const fetchPosts = createAsyncThunk<
   Post[],
@@ -31,35 +31,29 @@ export const fetchFollowingPosts = createAsyncThunk<
   },
   { nextUrl?: string | null } | void,
   { rejectValue: string }
->(
-  "posts/fetchFollowingPosts",
-  async (arg, { rejectWithValue }) => {
-    try {
-      const nextUrl =
-        arg && "nextUrl" in arg ? arg.nextUrl : undefined;
+>("posts/fetchFollowingPosts", async (arg, { rejectWithValue }) => {
+  try {
+    const nextUrl = arg && "nextUrl" in arg ? arg.nextUrl : undefined;
 
-      const endpoint = nextUrl ?? "/posts/following/";
+    const endpoint = nextUrl ?? "/posts/following/";
 
-      const { data } = await api.get<PaginatedResponse<Post>>(endpoint);
+    const { data } = await api.get<PaginatedResponse<Post>>(endpoint);
 
-      return {
-        results: data.results,
-        next: data.next,
-        isInitialLoad: !nextUrl,
-      };
-    } catch (error: unknown) {
-      if (axios.isAxiosError(error)) {
-        return rejectWithValue(
-          error.response?.data?.detail ??
-            "Erro ao buscar posts"
-        );
-      }
-
-      return rejectWithValue("Erro desconhecido ao buscar posts");
+    return {
+      results: data.results,
+      next: data.next,
+      isInitialLoad: !nextUrl,
+    };
+  } catch (error: unknown) {
+    if (axios.isAxiosError(error)) {
+      return rejectWithValue(
+        error.response?.data?.detail ?? "Erro ao buscar posts"
+      );
     }
-  }
-);
 
+    return rejectWithValue("Erro desconhecido ao buscar posts");
+  }
+});
 
 export const createPost = createAsyncThunk<
   Post,
@@ -87,7 +81,10 @@ export const createComment = createAsyncThunk<
     return data;
   } catch (err) {
     const error = err as AxiosError;
-    console.error("createComment error:", error.response?.data || error.message);
+    console.error(
+      "createComment error:",
+      error.response?.data || error.message
+    );
     return rejectWithValue("Erro ao enviar comentário");
   }
 });
@@ -124,3 +121,19 @@ export const toggleLike = createAsyncThunk<
     return rejectWithValue("Erro ao curtir/descurtir post");
   }
 });
+
+export const fetchUserPosts = createAsyncThunk<
+  {
+    results: Post[];
+    count: number;
+    next: string | null;
+    previous: string | null;
+  },
+  { username: string; isInitialLoad: boolean }
+>(
+  "posts/fetchUserPosts",
+  async ({ username }) => {
+    const response = await api.get(`/posts/user/${username}/posts/`);
+    return response.data;
+  }
+);

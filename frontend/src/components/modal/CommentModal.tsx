@@ -12,7 +12,11 @@ type Props = {
 export default function CommentModal({ postId, onClose }: Props) {
   const dispatch = useAppDispatch();
   const post =
-    useAppSelector((s) => s.posts.items.find((p) => p.id === postId)) ?? null;
+    useAppSelector(
+      (s) =>
+        s.posts.items.find((p) => p.id === postId) ??
+        s.posts.userPosts.items.find((p) => p.id === postId)
+    ) ?? null;
   const [text, setText] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [localError, setLocalError] = useState<string | null>(null);

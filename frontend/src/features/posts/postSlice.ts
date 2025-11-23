@@ -5,39 +5,66 @@ import {
   createPost,
   fetchFollowingPosts,
   fetchPosts,
+  fetchUserPosts,
   toggleLike,
 } from "./postThunks";
 import type { Post } from "./types";
-
-interface PostState {
+export interface PostState {
   items: Post[];
+  nextUrl: string | null;
+  hasMore: boolean;
+
+  userPosts: {
+    items: Post[];
+    loading: boolean;
+    error: string | null;
+    nextUrl: string | null;
+    hasMore: boolean;
+    count: number;
+  };
+
   loading: boolean;
   creating: boolean;
   commentingPostIds: number[];
   likingPostIds: number[];
   error: string | null;
-  nextUrl: string | null;
-  hasMore: boolean;
 }
 
-const initialState: PostState = {
+export const initialState: PostState = {
   items: [],
+  nextUrl: null,
+  hasMore: true,
+
+  userPosts: {
+    items: [],
+    loading: false,
+    error: null,
+    nextUrl: null,
+    hasMore: true,
+    count: 0,
+  },
+
   loading: false,
-  error: null,
   creating: false,
   likingPostIds: [],
   commentingPostIds: [],
-  nextUrl: null,
-  hasMore: true,
+  error: null,
 };
 
 const postSlice = createSlice({
   name: "posts",
   initialState,
-  reducers: {},
+  reducers: {
+    clearUserPosts(state) {
+      state.userPosts.items = [];
+      state.userPosts.loading = false;
+      state.userPosts.error = null;
+      state.userPosts.nextUrl = null;
+      state.userPosts.hasMore = true;
+    },
+  },
   extraReducers: (builder) => {
     builder
-
       .addCase(fetchPosts.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -120,6 +147,19 @@ const postSlice = createSlice({
             }
           }
 
+          if (serverPost) {
+            const userIndex = state.userPosts.items.findIndex(
+              (p) => p.id === serverPost.id
+            );
+            if (userIndex !== -1) state.userPosts.items[userIndex] = serverPost;
+          } else {
+            const userPost = state.userPosts.items.find((p) => p.id === postId);
+            if (userPost) {
+              userPost.is_liked = is_liked;
+              userPost.likes_count += likes_delta;
+            }
+          }
+
           state.likingPostIds = state.likingPostIds.filter(
             (id) => id !== postId
           );
@@ -145,6 +185,13 @@ const postSlice = createSlice({
           post.comments.unshift(newComment);
           post.comments_count += 1;
         }
+        const userPost = state.userPosts.items.find(
+          (p) => p.id === newComment.post
+        );
+        if (userPost) {
+          userPost.comments.unshift(newComment);
+          userPost.comments_count += 1;
+        }
       })
       .addCase(createComment.rejected, (state, action) => {
         state.loading = false;
@@ -152,8 +199,34 @@ const postSlice = createSlice({
           typeof action.payload === "string"
             ? action.payload
             : action.error.message ?? "Erro ao criar comentário";
+      })
+      .addCase(fetchUserPosts.pending, (state) => {
+        state.userPosts.loading = true;
+        state.userPosts.error = null;
+      })
+      .addCase(fetchUserPosts.fulfilled, (state, action) => {
+        const isInitialLoad = action.meta.arg.isInitialLoad;
+
+        state.userPosts.loading = false;
+        state.userPosts.nextUrl = action.payload.next;
+        state.userPosts.count = action.payload.count;
+        state.userPosts.hasMore = action.payload.next !== null;
+
+        if (isInitialLoad) {
+          state.userPosts.items = action.payload.results;
+        } else {
+          state.userPosts.items.push(...action.payload.results);
+        }
+      })
+      .addCase(fetchUserPosts.rejected, (state, action) => {
+        state.userPosts.loading = false;
+        state.userPosts.error =
+          typeof action.payload === "string"
+            ? action.payload
+            : "Erro ao buscar posts do usuário";
       });
   },
 });
 
+export const { clearUserPosts } = postSlice.actions;
 export default postSlice.reducer;

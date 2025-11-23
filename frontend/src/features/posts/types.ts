@@ -9,7 +9,7 @@ export interface PostComment {
 }
 
 export interface Post {
-  id: number;
+  id: number; 
   user: User;
   text: string;
   created_at: string;
@@ -17,5 +17,6 @@ export interface Post {
   likes_count: number;
   comments_count: number;
   is_liked: boolean;
+  count?: number;
 }
 
