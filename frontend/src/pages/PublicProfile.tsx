@@ -1,8 +1,12 @@
 import { ArrowLeft } from "lucide-react";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import FollowButton from "../components/button/FollowButton";
+import Post from "../components/feed/Post";
+import CommentModal from "../components/modal/CommentModal";
+import { ModalRoot } from "../components/modal/ModalRoot";
 import { Spinner } from "../components/spinner/Spinner";
+import { fetchUserPosts } from "../features/posts/postThunks";
 import { fetchUserByUsername } from "../features/users/userThunks";
 import { useAppDispatch, useAppSelector } from "../hooks/useAppSelector";
 import { formatJoinedDate } from "../utils/date";
@@ -11,6 +15,21 @@ export default function PublicProfile() {
   const { username } = useParams<{ username: string }>();
   const dispatch = useAppDispatch();
   const { selectedUser, loading } = useAppSelector((state) => state.users);
+  const [selectedPostId, setSelectedPostId] = useState<number | null>(null);
+  const { items: userPosts, loading: postsLoading } = useAppSelector(
+    (state) => state.posts.userPosts
+  );
+
+  useEffect(() => {
+    if (selectedUser?.username) {
+      dispatch(
+        fetchUserPosts({
+          username: selectedUser.username,
+          isInitialLoad: true,
+        })
+      );
+    }
+  }, [selectedUser?.username, dispatch]);
 
   useEffect(() => {
     if (username) {
@@ -82,12 +101,37 @@ export default function PublicProfile() {
       </div>
 
       <div className="mt-4 border-b border-gray-200 flex text-gray-600 font-semibold">
-        <button className="p-3 px-6 hover:bg-gray-100 transition cursor-pointer">
+        <span className="p-3 px-6 hover:bg-gray-100 transition cursor-pointer">
           Posts
-        </button>
+        </span>
       </div>
 
-      <div className="p-4 text-gray-500">Ainda não há posts</div>
+      <div>
+        {postsLoading ? (
+          <div className="flex justify-center py-10">
+            <Spinner size={35} color="border-t-blue-500" />
+          </div>
+        ) : userPosts.length === 0 ? (
+          <div className="text-gray-500 p-4">Ainda não há posts</div>
+        ) : (
+          <div className="flex flex-col">
+            {userPosts.map((post) => (
+              <Post
+                key={post.id}
+                post={post}
+                onCommentClick={() => setSelectedPostId(post.id)}
+              />
+            ))}
+          </div>
+        )}
+      </div>
+      {selectedPostId !== null && (
+        <CommentModal
+          postId={selectedPostId}
+          onClose={() => setSelectedPostId(null)}
+        />
+      )}
+      <ModalRoot />
     </div>
   );
 }
