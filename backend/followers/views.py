@@ -23,7 +23,11 @@ class FollowToggleView(APIView):
             follow.delete()
             return Response({'message': 'Você deixou de seguir.', 'is_following': False}, status=status.HTTP_200_OK)
 
-        return Response({'message': 'Você começou a seguir.', 'is_following': True}, status=status.HTTP_201_CREATED)
+        return Response({
+            'message': 'Você começou a seguir.', 
+            'is_following': True,
+            'target_user': UserProfileSerializer(target_user).data},
+            status=status.HTTP_201_CREATED)
 
 class FollowersListView(generics.ListAPIView):
     serializer_class = UserProfileSerializer
