@@ -15,3 +15,9 @@ class FollowCreateSerializer(serializers.ModelSerializer):
         model = Follow
         fields = ['id', 'follower', 'following', 'created_at']
         read_only_fields = ['id', 'follower', 'created_at']
+    
+    def validate(self, attrs):
+        request = self.context['request']
+        if attrs['following'] == request.user:
+            raise serializers.ValidationError("Você não pode seguir a si mesmo.")
+        return attrs

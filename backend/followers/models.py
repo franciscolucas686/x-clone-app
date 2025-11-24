@@ -10,7 +10,8 @@ class Follow(models.Model):
 
     class Meta:
         constraints = [
-            models.UniqueConstraint(fields=['follower', 'following'], name='unique_follow_relation')
+            models.UniqueConstraint(fields=['follower', 'following'], name='unique_follow_relation'),
+            models.CheckConstraint(check=~models.Q(follower=models.F("following")), name="prevent_self_follow"),
         ]
 
     def __str__(self):
