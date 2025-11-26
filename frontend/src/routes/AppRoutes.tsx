@@ -13,6 +13,7 @@ import Profile from "../pages/ProfilePage";
 import PublicProfile from "../pages/PublicProfile";
 import PrivateRoute from "./PrivateRoute";
 import PublicRoute from "./PublicRoute";
+import FollowListPage from "../pages/FollowListPage";
 
 export function AppRoutes() {
   const dispatch = useAppDispatch();
@@ -34,6 +35,14 @@ export function AppRoutes() {
             <Route path="/feed" element={<Feed />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/user/:username" element={<PublicProfile />} />
+            <Route
+              path="/follow/:username/followers"
+              element={<FollowListPage />}
+            />
+            <Route
+              path="/follow/:username/following"
+              element={<FollowListPage />}
+            />
             <Route path="/messages" element={<MessagePage />} />
             <Route path="/notifications" element={<NotificationsPage />} />
             <Route path="/explorer" element={<ExplorerPage />} />

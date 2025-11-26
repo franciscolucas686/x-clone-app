@@ -16,8 +16,6 @@ export default function ExplorerPage() {
     dispatch(fetchUsers()).finally(() => setLocalLoading(false));
   }, [dispatch]);
 
-  console.log("users =", users, "tipo =", Array.isArray(users));
-
   const filteredUsers = users.filter(
     (user) =>
       user.name.toLowerCase().includes(search.toLowerCase()) ||

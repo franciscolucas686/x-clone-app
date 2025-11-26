@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { clearError, setError } from "../../features/auth/authSlice";
 import { updateProfile } from "../../features/auth/authThunks";
 import { closeModal } from "../../features/modal/modalSlice";
+import { fetchUserByUsername } from "../../features/users/userThunks";
 import { useAppDispatch, useAppSelector } from "../../hooks/useAppSelector";
 import { CloseIcon } from "../icons/CloseIcon";
 import ModalLayout from "./ModalLayout";
@@ -61,6 +62,8 @@ export default function EditProfileModal() {
 
     const result = await dispatch(updateProfile(form));
     if (updateProfile.fulfilled.match(result)) {
+      const updatedUser = result.payload;
+      dispatch(fetchUserByUsername(updatedUser.username));
       dispatch(closeModal());
     }
   };
@@ -75,7 +78,7 @@ export default function EditProfileModal() {
       </h2>
 
       <div className="relative w-48 h-48 m-auto rounded-full">
-        <img 
+        <img
           src={previewUrl}
           alt={form.name || "Foto de perfil"}
           className="w-full h-full object-cover border-4 border-white bg-gray-100 rounded-full overflow-hidden"

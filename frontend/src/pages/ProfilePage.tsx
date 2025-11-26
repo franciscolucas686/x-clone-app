@@ -1,10 +1,11 @@
 import { ArrowLeft } from "lucide-react";
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import CommentModal from "../components/modal/CommentModal";
 import { ModalRoot } from "../components/modal/ModalRoot";
 import { Spinner } from "../components/spinner/Spinner";
 import { openModal } from "../features/modal/modalSlice";
+import { clearUserPosts } from "../features/posts/postSlice";
 import { fetchUserPosts } from "../features/posts/postThunks";
 import { fetchUserByUsername } from "../features/users/userThunks";
 import { useAppDispatch, useAppSelector } from "../hooks/useAppSelector";
@@ -14,6 +15,7 @@ import Post from "../components/feed/Post";
 
 export default function Profile() {
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
 
   const { user } = useAppSelector((state) => state.auth);
   const { selectedUser } = useAppSelector((state) => state.users);
@@ -27,26 +29,34 @@ export default function Profile() {
   const [selectedPostId, setSelectedPostId] = useState<number | null>(null);
 
   useEffect(() => {
-    if (user?.username && !selectedUser) {
-      dispatch(fetchUserByUsername(user.username));
-    }
-  }, [user?.username, selectedUser, dispatch]);
-
-  useEffect(() => {
     const timer = setTimeout(() => setLocalLoading(false), 500);
     return () => clearTimeout(timer);
   }, []);
 
   useEffect(() => {
-    if (selectedUser?.username) {
-      dispatch(
-        fetchUserPosts({
-          username: selectedUser.username,
-          isInitialLoad: true,
-        })
-      );
-    }
-  }, [selectedUser?.username, dispatch]);
+    if (!user?.username) return;
+
+    const fetchData = async () => {
+      dispatch(clearUserPosts());
+      try {
+        const userResult = await dispatch(
+          fetchUserByUsername(user.username)
+        ).unwrap();
+        if (userResult?.username) {
+          await dispatch(
+            fetchUserPosts({
+              username: userResult.username,
+              isInitialLoad: true,
+            })
+          ).unwrap();
+        }
+      } catch (error) {
+        console.error("Erro ao carregar perfil:", error);
+      }
+    };
+
+    fetchData();
+  }, [user?.username, dispatch]);
 
   if (localLoading || !selectedUser) {
     return (
@@ -58,11 +68,11 @@ export default function Profile() {
   return (
     <div className="flex flex-col">
       <div className="flex items-center">
-        <Link to="/feed">
+        <button onClick={() => navigate(-1)}>
           <div className="m-2 rounded-full hover:bg-gray-100 transition">
             <ArrowLeft size={40} className="p-2" />
           </div>
-        </Link>
+        </button>
 
         <div className="ml-4">
           <h2 className="text-xl font-bold cursor-default">
@@ -103,11 +113,25 @@ export default function Profile() {
           </p>
 
           <div className="flex space-x-4 mt-2">
-            <span className="cursor-default">
-              <strong>{selectedUser.following_count}</strong> Seguindo
-            </span>
-            <span className="cursor-default">
+            <span
+              className="cursor-pointer hover:underline"
+              onClick={() =>
+                navigate(`/follow/${selectedUser.username}/followers`, {
+                  state: { tab: "followers" },
+                })
+              }
+            >
               <strong>{selectedUser.followers_count}</strong> Seguidores
+            </span>
+            <span
+              className="cursor-pointer hover:underline"
+              onClick={() =>
+                navigate(`/follow/${selectedUser.username}/following`, {
+                  state: { tab: "following" },
+                })
+              }
+            >
+              <strong>{selectedUser.following_count}</strong> Seguindo
             </span>
           </div>
         </div>
