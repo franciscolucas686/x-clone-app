@@ -11,9 +11,33 @@ export interface User {
 }
 
 export interface UsersState {
-  list: User[];
-  loading: boolean;
-  loadingFollowIds: number[];
-  error: string | null;
   selectedUser: User | null;
+
+  list: User[];
+
+  loading: boolean;
+
+  followers: User[];
+  following: User[];
+
+  followersNext: string | null;
+  followingNext: string | null;
+
+  hasMoreFollowers: boolean;
+  hasMoreFollowing: boolean;
+
+  loadingFollowers: boolean;
+  loadingFollowing: boolean;
+
+  loadingFollowIds: number[];
+
+  error: string | null;
 }
+
+export interface PaginatedUsersResponse {
+  count: number;
+  next: string | null;
+  previous: string | null;
+  results: User[];
+}
+

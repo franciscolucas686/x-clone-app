@@ -1,6 +1,7 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import api from "../../api/axios";
 import type { RootState } from "../../app/store";
+import type { PaginatedUsersResponse } from "../../features/users/types";
 import type { User } from "./types";
 
 export const fetchUsers = createAsyncThunk<User[]>(
@@ -12,14 +13,14 @@ export const fetchUsers = createAsyncThunk<User[]>(
 );
 
 export const toggleFollow = createAsyncThunk<
-  { userId: number; isFollowing: boolean },
+  { userId: number; isFollowing: boolean; delta: number },
   number,
   { state: RootState }
 >("users/toggleFollow", async (userId) => {
   const response = await api.post(`/follow/${userId}/toggle/`);
   const { is_following } = response.data;
 
-  return { userId, isFollowing: is_following };
+  return { userId, isFollowing: is_following, delta: is_following ? 1 : -1 };
 });
 
 export const fetchUserByUsername = createAsyncThunk<
@@ -55,3 +56,21 @@ export const fetchUserByUsername = createAsyncThunk<
     }
   }
 );
+
+export const fetchFollowers = createAsyncThunk<
+  PaginatedUsersResponse,
+  { userId: number; url?: string }
+>("users/fetchFollowers", async ({ userId, url }) => {
+  const endpoint = url ?? `/follow/${userId}/followers/`;
+  const response = await api.get(endpoint);
+  return response.data;
+});
+
+export const fetchFollowing = createAsyncThunk<
+  PaginatedUsersResponse,
+  { userId: number; url?: string }
+>("users/fetchFollowing", async ({ userId, url }) => {
+  const endpoint = url ?? `/follow/${userId}/following/`;
+  const response = await api.get(endpoint);
+  return response.data;
+});

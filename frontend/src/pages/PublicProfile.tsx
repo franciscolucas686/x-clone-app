@@ -1,11 +1,12 @@
 import { ArrowLeft } from "lucide-react";
 import { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import FollowButton from "../components/button/FollowButton";
 import Post from "../components/feed/Post";
 import CommentModal from "../components/modal/CommentModal";
 import { ModalRoot } from "../components/modal/ModalRoot";
 import { Spinner } from "../components/spinner/Spinner";
+import { clearUserPosts } from "../features/posts/postSlice";
 import { fetchUserPosts } from "../features/posts/postThunks";
 import { fetchUserByUsername } from "../features/users/userThunks";
 import { useAppDispatch, useAppSelector } from "../hooks/useAppSelector";
@@ -14,6 +15,7 @@ import { formatJoinedDate } from "../utils/date";
 export default function PublicProfile() {
   const { username } = useParams<{ username: string }>();
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
   const { selectedUser, loading } = useAppSelector((state) => state.users);
   const [selectedPostId, setSelectedPostId] = useState<number | null>(null);
   const { items: userPosts, loading: postsLoading } = useAppSelector(
@@ -21,21 +23,31 @@ export default function PublicProfile() {
   );
 
   useEffect(() => {
-    if (selectedUser?.username) {
-      dispatch(
-        fetchUserPosts({
-          username: selectedUser.username,
-          isInitialLoad: true,
-        })
-      );
-    }
-  }, [selectedUser?.username, dispatch]);
+    if (!username) return;
 
-  useEffect(() => {
-    if (username) {
-      dispatch(fetchUserByUsername(username));
-    }
-  }, [dispatch, username]);
+    const fetchData = async () => {
+      dispatch(clearUserPosts());
+
+      try {
+        const userResult = await dispatch(
+          fetchUserByUsername(username)
+        ).unwrap();
+
+        if (userResult?.username) {
+          await dispatch(
+            fetchUserPosts({
+              username: userResult.username,
+              isInitialLoad: true,
+            })
+          ).unwrap();
+        }
+      } catch (error) {
+        console.error("Erro ao carregar o perfil público:", error);
+      }
+    };
+
+    fetchData();
+  }, [username, dispatch]);
 
   if (loading || !selectedUser) {
     return (
@@ -49,11 +61,11 @@ export default function PublicProfile() {
   return (
     <div className="flex flex-col">
       <div className="flex items-center">
-        <Link to="/feed">
+        <button className="cursor-pointer" onClick={() => navigate(-1)}>
           <div className="m-2 rounded-full hover:bg-gray-100 transition">
             <ArrowLeft size={40} className="p-2" />
           </div>
-        </Link>
+        </button>
         <div className="ml-4">
           <h2 className="text-xl font-bold cursor-default">
             {selectedUser.name}
@@ -85,11 +97,25 @@ export default function PublicProfile() {
           </p>
 
           <div className="flex space-x-4 mt-2">
-            <span className="cursor-default">
-              <strong>{selectedUser.following_count}</strong> Seguindo
-            </span>
-            <span className="cursor-default">
+            <span
+              className="cursor-pointer hover:underline"
+              onClick={() =>
+                navigate(`/follow/${selectedUser.username}/followers`, {
+                  state: { tab: "followers" },
+                })
+              }
+            >
               <strong>{selectedUser.followers_count}</strong> Seguidores
+            </span>
+            <span
+              className="cursor-pointer hover:underline"
+              onClick={() =>
+                navigate(`/follow/${selectedUser.username}/following`, {
+                  state: { tab: "following" },
+                })
+              }
+            >
+              <strong>{selectedUser.following_count}</strong> Seguindo
             </span>
           </div>
         </div>

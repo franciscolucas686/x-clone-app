@@ -47,4 +47,4 @@ class FollowTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data["count"], 1)
         self.assertEqual(len(response.data["results"]), 1)
-        self.assertEqual(response.data["results"][0]['following']['username'], 'user2')
+        self.assertEqual(response.data["results"][0]['username'], 'user1')
