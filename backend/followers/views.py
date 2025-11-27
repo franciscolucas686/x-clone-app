@@ -35,7 +35,7 @@ class FollowersListView(generics.ListAPIView):
 
     def get_queryset(self):
         user_id = self.kwargs.get("user_id")
-        return User.objects.filter(following__following_id=user_id).distinct()
+        return User.objects.filter(following__following=user_id).distinct().order_by('id')
 
 
 class FollowingListView(generics.ListAPIView):
@@ -44,4 +44,4 @@ class FollowingListView(generics.ListAPIView):
 
     def get_queryset(self):
         user_id = self.kwargs.get("user_id")
-        return User.objects.filter(followers__follower_id=user_id).distinct()
+        return User.objects.filter(followers__follower=user_id).distinct().order_by('id')

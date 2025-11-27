@@ -41,8 +41,8 @@ else:
 END
 fi
 
-echo "🌱 Executando seed_data.py e populando dados..."
-python seed_data.py || echo "⚠️ Falha ao executar seed"
+  echo "🌱 Executando seed_data_dev.py e populando dados..."
+  python seed_data_dev.py || echo "⚠️ Falha ao executar seed_data_dev"
 
 echo "✅ Setup completo! Iniciando servidor Django..."
 exec "$@"

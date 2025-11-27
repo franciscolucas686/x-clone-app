@@ -7,6 +7,9 @@ from rest_framework_simplejwt.tokens import RefreshToken
 
 class FollowTests(APITestCase):
     def setUp(self):
+        User.objects.all().delete()
+        Follow.objects.all().delete()
+
         self.user1 = User.objects.create_user(username='user1', password='StrongPassword123')
         self.user2 = User.objects.create_user(username='user2', password='StrongPassword123')
 
@@ -44,5 +47,9 @@ class FollowTests(APITestCase):
         Follow.objects.create(follower=self.user1, following=self.user2)
         response = self.client.get(self.followers_list_url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data), 1)
-        self.assertEqual(response.data[0]['following']['username'], 'user2')
+        self.assertEqual(response.data["count"], 1)
+        self.assertEqual(len(response.data["results"]), 1)
+        follower_data = response.data["results"][0]
+        self.assertEqual(follower_data["id"], self.user1.id)
+        self.assertEqual(follower_data["username"], self.user1.username)
+
