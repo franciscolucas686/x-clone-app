@@ -16,6 +16,8 @@ jobs:
           POSTGRES_DB: xclone_test
           POSTGRES_USER: xclone_user
           POSTGRES_PASSWORD: xclone_pass
+        ports:
+          - 5432:5432
         options: >-
           --health-cmd "pg_isready -U postgres -d postgres" 
           --health-interval=10s
