@@ -5,7 +5,7 @@ import sys
 def main():
     os.environ.setdefault(
         "DJANGO_SETTINGS_MODULE",
-        os.getenv("DJANGO_SETTINGS_MODULE", "backend.settings.development")
+        os.getenv("DJANGO_SETTINGS_MODULE", "backend.settings.production")
     )
 
     try:
