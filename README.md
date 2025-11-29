@@ -6,7 +6,7 @@ Ele fornece funcionalidades de rede social, incluindo autenticação de usuário
 Também suporta upload de avatares e gerenciamento de perfis.  
 
 ## Tecnologias
-- Python 3.11+
+- Python 3.12+
 - Django
 - Django REST Framework
 - Docker & Docker Compose (opcional)
