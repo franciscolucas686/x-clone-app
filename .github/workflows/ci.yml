@@ -28,7 +28,7 @@ jobs:
       DATABASE_NAME: xclone_test
       DATABASE_USER: xclone_user
       DATABASE_PASSWORD: xclone_pass
-      DATABASE_HOST: localhost
+      DATABASE_HOST: db
       DATABASE_PORT: 5432
 
     steps:
