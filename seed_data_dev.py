@@ -6,7 +6,6 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "backend.settings.development")
 django.setup()
 
 from django.contrib.auth import get_user_model
-from django.core.files import File
 from followers.models import Follow
 from posts.models import Post, Like, Comment
 
@@ -33,31 +32,31 @@ def create_users():
             password=data["password"],
         )
 
-        avatar_path = os.path.join("media","avatars", data["avatar"])
+        avatar_path = os.path.join("media", "avatars", data["avatar"])
+
         if os.path.exists(avatar_path):
-            with open(avatar_path, "rb") as img_file:
-                user.avatar.save(data["avatar"], File(img_file), save=True)
+
+            user.avatar = f"avatars/{data['avatar']}"
+            user.save()
+
             print(f"🖼️ Avatar adicionado para {user.username}")
         else:
-            print(f"⚠️ Avatar não encontrado: {avatar_path}")
+            print(f"⚠️ Avatar NÃO encontrado para {user.username}: {avatar_path}")
 
         created_users.append(user)
 
-    print("✅ Usuários criados com sucesso!")
     return created_users
 
 
 def create_followers(users):
     if len(users) < 2:
-        print("⚠️  Poucos usuários para criar seguidores. Pulando etapa de followers.")
+        print("⚠️ Poucos usuários para criar seguidores. Pulando etapa de followers.")
         return
 
     for user in users:
         following_choices = [u for u in users if u != user]
-        if not following_choices:
-            continue
         following_sample = random.sample(
-            following_choices, 
+            following_choices,
             k=random.randint(1, len(following_choices))
         )
         for target in following_sample:
@@ -69,11 +68,12 @@ def create_followers(users):
 def create_posts(users):
     print("📝 Criando posts...")
     posts = []
+
     post_texts = [
         "Lindo dia hoje para fazer um bom trabalho! 🚀",
         "Hoje o café saiu mais forte que o código ☕",
         "O amor move montanhas = ❤️",
-        "Aprendendo sobre como eu posso melhorar meu ingles.",
+        "Aprendendo sobre como eu posso melhorar meu inglês.",
         "Curtindo o dia fazendo uma caminhada no parque 🌞",
     ]
 
@@ -115,15 +115,15 @@ def create_likes_and_comments(users, posts):
             )
             print(f"{commenter.username} comentou no post de {post.user.username}")
 
-    print("✅ Curtidas e comentários criados!")
+    print("✅ Curtidas e comentários criadas!")
 
 
 def run():
     print("🌱 Iniciando seed de dados...")
 
     users = create_users()
-    create_followers(users)
     posts = create_posts(users)
+    create_followers(users)
     create_likes_and_comments(users, posts)
 
     print("🌿 Seed completo com sucesso!")
