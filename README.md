@@ -63,12 +63,24 @@ python manage.py runserver
 
 O backend estará disponível em: http://127.0.0.1:8000/
 
+## CI/CD
+
+O projeto possui **Integração Contínua (CI)** e **Deploy Contínuo (CD)** configurados via **GitHub Actions**:
+
+### CI
+Ao enviar push para a branch `main`, o workflow:
+
+- Configura Python 3.12
+- Configura Postgres para testes
+- Instala dependências
+- Executa os testes do Django (`python manage.py test`)
+
+### CD
+Se os testes passarem, o workflow dispara automaticamente o **deploy no Render** usando os secrets `RENDER_SERVICE_ID` e `RENDER_API_KEY`.
+
+Isso garante que o código seja testado e atualizado em produção automaticamente.
+
 Este backend serve como API para o frontend do clone do app X, permitindo simular uma rede social completa com usuários, posts e interações.
-
-
-
-
-
 
 
 
