@@ -53,5 +53,5 @@ local_origins = [
 ]
 
 CORS_ALLOWED_ORIGINS = [f"https://{host}" for host in ALLOWED_HOSTS if not host.startswith("*")]
+CORS_ALLOWED_ORIGINS += ["https://x-clone-frontend-nu.vercel.app"]
 CORS_ALLOWED_ORIGINS += local_origins
-
